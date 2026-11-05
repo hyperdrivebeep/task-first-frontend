@@ -33,6 +33,25 @@
 
 과업을 정한 뒤 검색한다. '예쁜 AI dashboard' 대신 '인용 원문을 확인하고 돌아오는 방식', '행을 선택해 비교 맥락을 유지하는 상세 보기'처럼 검색한다.
 
+### 어디서 찾나
+
+사이트가 아니라 **지금 결정에 필요한 증거 유형(artifact)** 을 먼저 정하고, 그에 맞는 곳에서 찾는다. 작성자의 두 가이드가 이 기준의 출처다(작성자 Drive 문서라 접근 권한이 필요할 수 있다).
+
+- [좋은 UI·UX 레퍼런스를 찾는 법](https://drive.google.com/file/d/1uibapms5DExFUlvk-Hl6ffXtMsHwTv9V/view)
+- [AI-slop 없는 모바일 웹 UI·UX](https://drive.google.com/file/d/1VRYj-gVEBVrBNgMg_JQfeBjJEDfXksoi/view)
+
+| 알고 싶은 것 | 필요한 artifact | 시작점 | 쓰면 안 되는 용도 |
+| --- | --- | --- | --- |
+| 실제 제품의 화면·상태 | screenshot, captured flow | [Mobbin](https://mobbin.com/), [Refero](https://refero.design/), [Pttrns](https://www.pttrns.com/), [Nicelydone](https://nicelydone.club/) | 사용성·전환 효과 증명 |
+| 과업이 어떤 순서로 진행되는가 | 녹화된 완전한 흐름 | [Page Flows](https://pageflows.com/), Mobbin flow/video | 모든 분기·오류 상태가 있다고 가정 |
+| 왜 그렇게 설계했나·원칙 | 연구·가이드라인 | [NN/g](https://www.nngroup.com/), [Baymard](https://baymard.com/), 공식 디자인 시스템(GOV.UK, USWDS 등) | 대상 제품에서의 효과로 단정 |
+| 어떻게 구현하나 | 명세·코드 | 대상 제품이 이미 쓰는 컴포넌트 라이브러리의 공식 문서 | 라이브러리 교체를 UX 개선으로 간주 |
+| 랜딩·페이지 구성 | 페이지 갤러리 | [One Page Love](https://onepagelove.com/), [Land-book](https://land-book.com/) | 앱 과업 흐름 근거 |
+
+- 대부분 화면 모음 사이트는 로그인·유료다. 에이전트는 공개 페이지만 본다. 사용자 계정 로그인은 별도 허락 없이 하지 않고, 못 본 것은 "보지 못함"으로 적는다.
+- 같은 사이트 안에도 실제 출시 화면·AI 생성 컨셉·광고가 섞인다. 사이트가 아니라 개별 화면(캡처 날짜·플랫폼)과 그것이 지지하는 주장 단위로 기록한다.
+- 한 과업에 동종 흐름 3~5개를 비교해 공통 규칙과 변형점을 뽑는다.
+
 - 공식 문서, 디자인 시스템, 직접 접근 가능한 화면을 우선한다.
 - 검색 요약은 후보 탐색에 쓰고 중요한 주장은 본문을 연 뒤 판단한다.
 - 조사일과 버전을 기록한다. 과거 링크를 현재 동작으로 단정하지 않는다.
