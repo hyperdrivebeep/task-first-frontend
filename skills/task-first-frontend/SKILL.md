@@ -1,65 +1,79 @@
 ---
 name: task-first-frontend
-description: "Design or substantially redesign a frontend from actual code, user tasks, current UI evidence, and researched interaction patterns; produce comparable visual directions and carry a selected direction through authorized implementation and verification. Use for 프론트엔드 설계, 코드 보고 사용자 과업부터, 레퍼런스 조사해서 UI 개선, or comparing whether a new UI is better. Not for unrelated backend work or restarting discovery for a small fix within an already selected UI."
+description: "Design or substantially redesign a frontend from actual code, user tasks, current UI evidence, and researched interaction patterns; produce comparable visual directions and carry a selected direction through authorized implementation and verification. Stage-gated: every stage writes a fixed artifact and must pass scripts/gate.mjs before the next. Use for 프론트엔드 설계, 코드 보고 사용자 과업부터, 레퍼런스 조사해서 UI 개선, or comparing whether a new UI is better. Not for unrelated backend work."
 ---
 
-# 과업 중심 프론트엔드
+# 과업 중심 프론트엔드 (단계 게이트)
 
-사용자가 하려는 일을 코드와 실제 화면에서 찾아내고, 그 일을 더 쉽게 수행할 UI를 설계한다. 기존 UI의 색이나 다른 제품의 배치를 옮기는 것으로 과업 정의를 대신하지 않는다. 디자인 실험을 요청했다면 설계 결과까지 만들고, 구현도 요청했다면 승인된 범위의 정상 사용 흐름까지 연결한다.
+사용자가 하려는 일을 코드와 실제 화면에서 찾아내고, 그 일을 더 쉽게 하는 UI를 설계·구현·검증한다. 이 문서는 단계 라우터다. 각 단계는 정해진 산출물 파일을 만들고 게이트를 통과해야 끝난다.
 
-## 시작과 범위
+## 절대 규칙
 
-- 첫 응답에서 적용 사실과 산출물을 짧게 말한다. 능력 확인으로 끝내지 않는다.
-- 요청을 조사/설계, 선택된 시안 구현, 기존 설계의 작은 수정, 결과 검증 중 어디까지 수행할지 읽는다. 이는 내부 구분이며 사용자가 고를 별도 승인 절차가 아니다.
-- 제품·흐름·얻을 결과가 명확하면 가정을 설명하고 진행한다. 문서·코드에서 답할 수 없는 핵심 누락만 질문한다.
-- 첨부 이미지가 제품 화면인지, 문서 링크가 있는 대화 캡처인지 먼저 구분한다. 문서를 읽어 달라는 요청을 화면 복제로 바꾸지 않는다.
-- 저장소 지침과 현재 작업서를 우선한다. 설계는 제품 수정·서버 재시작·모델 실행·공개를 자동 허가하지 않는다. 기존 승인과 선택은 재확인하지 않는다.
+- **게이트를 통과하지 못한 단계는 완료가 아니다.** 단계마다 `node <skill>/scripts/gate.mjs <work> --stage N`을 실행한다. FAIL이 하나라도 있으면 다음 단계로 가지 않고, 그 단계를 "완료"라고 보고하지 않는다. 막힌 항목과 게이트 출력 원문을 그대로 보고한다.
+- 게이트는 누적이다. `--stage 4`는 S0~S4를 다시 검사한다. 앞 단계 파일을 고치면 다시 통과해야 한다.
+- WARN은 고치거나, `03-alts/boards/board.md`나 보고서에 이유를 적는다. 말없이 넘기지 않는다.
+- 작업 폴더 `<work>`의 구조와 각 파일 형식은 [work-folder.md](references/work-folder.md)에 있다. 그 형식이 게이트의 입력이다.
+- 게이트 통과는 형식과 존재의 증명이다. 내용이 맞는지는 별도 판단이며, 게이트 PASS를 사용성 증명으로 쓰지 않는다.
 
-## 전체 흐름
+## 단계
 
-새 설계는 1–6을 수행한다. 이미 선택한 시안이 있으면 선택을 보존하고 필요한 기준만 갱신한 뒤 7–8로 간다. 작은 수정에 전체 조사와 세 시안을 강제하지 않는다.
+| 단계 | 할 일 | 필수 산출물 (`<work>/`) | 게이트 | 먼저 읽을 문서 |
+| --- | --- | --- | --- | --- |
+| S0 | 읽기 원장 | `reading-ledger.md` | `--stage 0` | [reading-and-delegation.md](references/reading-and-delegation.md), [work-folder.md](references/work-folder.md) |
+| S1 | 계약: 사람·여정·이상 상태·고정 케이스·상태 | `00-contract.md` (```gate 블록 포함) | `--stage 1` | [guardrails/references/method.md](references/guardrails/references/method.md), [discovery-and-tasks.md](references/discovery-and-tasks.md) |
+| S2 | 비포 캡처 | `01-before/before-<screen>-<width>.png\|webp` | `--stage 2` | [audit-and-research.md](references/audit-and-research.md) |
+| S3 | 레퍼런스 방문·캡처 | `02-refs/INDEX.md`, `02-refs/ref-*.png` | `--stage 3` | [audit-and-research.md](references/audit-and-research.md), [guides/01](references/guides/01-good-ui-ux-reference-guide.md), [guides/02](references/guides/02-no-ai-slop-mobile-web-ui-ux.md), [site-list.json](references/site-list.json) |
+| S4 | 시안(기본 3개) + 시안별 출처 보드 + 안티슬롭 | `03-alts/alt-<id>-<width>.*`, html/css 원본, `03-alts/boards/board-<id>.*`, `board.md` | `--stage 4` | [design-and-ideation.md](references/design-and-ideation.md), [anti-slop.md](references/anti-slop.md) |
+| S5 | 가드레일·검증 판정표 | `04-verdicts.md` | `--stage 5` | [guardrails/](references/guardrails/README.md), [verification/](references/verification/README.md) |
+| S6 | 구현 + 애프터 캡처 (S2와 같은 크기·상태) | `05-after/after-<screen>-<width>.*` | `--stage 6` | [implementation-and-validation.md](references/implementation-and-validation.md), [verification/references/browser-evidence.md](references/verification/references/browser-evidence.md) |
+| S7 | 보고 (이미지 본문 삽입, PR 링크) | `06-report.md` | `--stage 7` | [implementation-and-validation.md](references/implementation-and-validation.md) |
 
-1. **현재 기준 고정.** 실제 저장소·branch/SHA·dirty·작업서와 실행 화면의 출처를 구분한다. main을 지정했으면 원격 main을 확인하고 읽을 커밋을 고정한다.
-2. **기능에서 과업 도출.** 진입점→화면→행동→API/상태 소유자→결과 소비자를 추적한다. 사용자 상황, 필요한 판단, 다음 행동, 완료 조건을 코드 근거에 연결한다.
-3. **현행 UI 관찰.** 중요한 흐름을 실제 브라우저에서 캡처하고 단계별 장점·문제·근거·한계를 기록한다. 로딩 화면과 잘못된 상태를 정상 화면으로 채택하지 않는다.
-4. **과업별 레퍼런스 조사.** 공식 문서와 관찰 가능한 화면에서 상호작용 원리를 찾는다. 출처→원리→적용 가설→적용하지 않을 것→확인 수준을 기록한다.
-5. **정보 구조와 상태 계약 설계.** 주 과업, 첫 화면 정보, 주 행동, 상세 열기와 복귀, 오류/부분/오래된 상태, 권한과 저장 경계를 정한다. 기존 유효한 토큰·컴포넌트를 바탕으로 한다.
-6. **같은 내용으로 구조 비교.** 기본은 독립적인 세 시안이며 사용자 지정 수를 따른다. 색상만 바꾸지 않는다. 실제 표시 순서와 파일을 연결하고 개선을 검증 가능한 가설로 적는다. 구현 대상이 아직 선택되지 않았으면 시안을 제시하고 선호를 받는다.
-7. **선택된 구조를 구현.** 기존 계약과 사용자 데이터를 유지하며 주 흐름을 정상 진입 경로에 연결한다. 이미지 속 가짜 필드·기능·수치는 제거한다. 프로토타입과 제품 통합을 구분한다.
-8. **실제 과업으로 비교 검증.** 화면 충실도, 상호작용, 상태/저장/권한, 반응형·접근성, 과업 수행을 각각 확인한다. 검증 수준에 맞춰 완료를 보고한다.
+게이트는 단계마다 위 "먼저 읽을 문서"가 원장에 끝 줄까지 읽힌 것으로 기록됐는지도 검사한다.
 
-## 단계별 참고 자료
+### S0 읽기 원장
 
-필요한 단계에서 해당 문서만 읽는다. 사례와 원문 프롬프트를 매번 읽을 필요는 없다.
+긴 문서를 제목만 보고 요약하지 않는다. 끝 줄까지 나눠 읽고 파일마다 원장에 `path | total_lines | last_line_read | method`를 적는다. 게이트가 줄 수를 다시 센다. 한 맥락에 다 안 들어가는 자료 묶음은 에이전트들에게 나눠 맡기고, 각자 커버리지 표를 돌려받은 뒤 리드가 게이트로 다시 센다. 자세한 규칙: [reading-and-delegation.md](references/reading-and-delegation.md).
 
-- 1–2: [discovery-and-tasks.md](references/discovery-and-tasks.md) — 기준 커밋, CSS 적용 순서, 호출/소비 경로, 과업 정의.
-- 3–4: [audit-and-research.md](references/audit-and-research.md) — 캡처, 단계별 감사, 공식 레퍼런스의 적용 범위.
-- 5–6: [design-and-ideation.md](references/design-and-ideation.md) — 정보 구조, 상태 계약, 공정한 시안 비교, 재사용 프롬프트.
-- 7–8: [implementation-and-validation.md](references/implementation-and-validation.md) — 정상 진입 연결, 검증 수준, 전후 비교와 인계.
-- 전체 산출물: [설계 문서 양식](assets/design-brief-template.md). 적용되지 않는 항목은 이유와 함께 N/A로 두고 없는 증거로 채우지 않는다.
+### S1 계약
+
+[method.md](references/guardrails/references/method.md)대로 사람과 상황, 진입부터 복귀까지의 여정, 단계별 이상 상태, 고정 케이스, 상태를 적는다. 고정 케이스에는 1440과 390 폭을 넣는다. 제품이 데스크톱 폭만 지원하면 그 폭과 `widths_reason`을 적는다. 과업 정의와 코드 근거는 [discovery-and-tasks.md](references/discovery-and-tasks.md)를 따른다. `scope`는 `design-only`, `implement`, `small-fix` 중 하나다. 작은 수정(`small-fix`)은 이미 고른 시안을 유지하므로 S3·S4가 N/A다.
+
+### S2 비포 캡처
+
+바꾸기 전에 선언한 화면 × 폭마다 실제 화면을 찍는다. 로딩 중이거나 잘못된 상태의 캡처는 버리고 다시 찍는다. 새 제품이라 기존 화면이 없으면 계약에 `existing_ui: no`와 이유를 적는다.
+
+### S3 레퍼런스
+
+- [site-list.json](references/site-list.json)에서 계약의 `ref_tags`에 해당하는 사이트는 **모두** 방문한다. 건너뛸 수 있는 곳은 유료라 들어갈 수 없는 곳뿐이고, 사이트마다 이유를 적는다. "못 봄"만 적으면 게이트가 FAIL을 낸다.
+- `visited`로 적은 사이트는 그 사이트 URL의 캡처가 차용표에 하나 이상 있어야 한다.
+- 과업마다 비교할 화면 3~5개를 사이트 2곳 이상에서 모은다.
+- 로그인된 사용자 브라우저를 쓰기 **전에 사용자에게 묻는다.** 허락이 없거나 열리지 않으면 대화창에서 바로 알린다.
+
+### S4 시안·출처 보드·안티슬롭
+
+- 같은 사례·데이터·상태·폭으로 구조가 다른 시안을 기본 3개 만든다(사용자가 정한 수가 우선). 색만 바꾼 것은 다른 시안이 아니다.
+- 시안마다 출처 보드 이미지를 만든다. 왼쪽에 레퍼런스의 해당 부분, 오른쪽에 시안의 요소, 아래에 "가져온 것 / 바꾼 것"을 둔다. `board.md`에는 요소별로 같은 내용을 적는다.
+- [anti-slop.md](references/anti-slop.md)의 AS-1~AS-5를 시안마다 자가 점검한다. 카드의 장식용 왼쪽 강조 막대, 모든 항목의 테두리+둥근 카드를 패널 안에 다시 중첩한 구조, 항목마다 반복되는 색 pill 배지, 사방에 쓴 accent 색이 대상이다. 게이트가 html/css를 검사한다.
+
+### S5 판정
+
+[guardrails](references/guardrails/README.md)의 rule ID(F/P/C/I/T)와 [verification](references/verification/README.md)의 검사를 행 하나씩 `PASS / FAIL / UNVERIFIED / N/A`로 판정한다. N/A에는 이유를 쓴다. foundations·patterns의 규칙은 모두 행이 있어야 한다(묶은 행 허용). 필수 행이 FAIL이나 UNVERIFIED이면 완료로 보고하지 않는다. 설계만 하는 작업(`design-only`)이면 UNVERIFIED가 WARN으로 내려가지만, 보고서에 "UI 미검증"이라고 분명히 쓴다.
+
+### S6 구현·애프터
+
+선택된 시안을 정상 진입 경로에 연결한다. 비포마다 같은 폭·내용·상태의 애프터를 찍는다. 게이트가 픽셀 크기가 같은지 확인한다.
+
+### S7 보고
+
+`06-report.md`와 대화창 보고에 출처 보드, 비포·애프터 쌍을 **이미지로** 본문에 넣는다. 파일 경로만 주고 끝내지 않는다. 산출물은 저장소 브랜치·PR로 올리고 링크를 준다. 게이트 출력의 `RESULT:` 줄을 붙인다.
+
+## 위임
+
+단계를 자식 에이전트에게 맡길 때는 그 단계 절의 본문과 [work-folder.md](references/work-folder.md)의 해당 형식을 그대로 주고, 자식이 그 단계 게이트를 실행해 출력 원문을 돌려주게 한다. 리드는 같은 게이트를 다시 실행해 확인한다. 자식의 "완료" 보고만으로 단계를 넘기지 않는다. 자세한 규칙: [reading-and-delegation.md](references/reading-and-delegation.md).
+
+## 다른 참고 자료
+
+- 시작과 범위, 도구, 다른 스킬, 보존할 구분, 완료와 인계: [tools-and-scope.md](references/tools-and-scope.md)
+- 전체 설계 문서 양식: [assets/design-brief-template.md](assets/design-brief-template.md)
 - 재현/누락 점검: [case-study-and-coverage.md](references/case-study-and-coverage.md). 2026-10-13에 실제 수행한 단계와 미수행 단계를 구분한 사례다.
 - 사례의 이미지 생성 입력: [example-image-prompts.md](references/example-image-prompts.md). 역사적 예시이며 새 제품의 요구사항이 아니다.
-
-## 도구와 다른 스킬
-
-- 코드 검색은 범위를 좁힌 `rg`와 실제 파일 읽기부터 한다. 다른 프로젝트 문서를 참고해도 그 프로젝트의 구현 지시를 현재 제품에 적용하지 않는다.
-- Product Design을 적용한다면 `index`로 라우팅하고 `get-context`, `audit`, `ideate`, `image-to-code`, `design-qa` 중 해당 단계의 지침을 읽는다. 이미 제공된 맥락을 다시 묻지 않는다.
-- ImageGen 시안은 built-in 이미지 도구를 사용한다. 파일 경로가 있는 참조 이미지는 먼저 보고 실제로 첨부한다. 글로만 묘사하고 첨부했다고 말하지 않는다.
-- 브라우저는 현재 호스트와 사용자 선택에 맞춘 지원 도구를 사용한다. Codex Desktop의 Product Design 기본은 in-app browser다. 현행 도구 문서를 읽고 API를 추측하거나 별도 Playwright/CDP로 우회하지 않는다.
-- Figma·Sites·배포는 사용자가 정한 산출물에 필요할 때 해당 스킬로 연결한다. 도구가 있다는 이유로 업로드·외부 게시를 추가하지 않는다.
-- 도구가 없으면 가능한 코드/문서 분석은 계속하되 없는 캡처·생성·실행을 했다고 쓰지 않는다. 요청된 산출물 형식을 바꿔야 할 때만 차이를 설명하고 의사를 묻는다.
-- 서브에이전트는 필수 단계가 아니다. 현재 환경의 위임 규칙을 따른다.
-
-## 보존할 구분
-
-`코드 근거 ≠ 현재 서버 지문`, `공식 설명 ≠ 직접 사용`, `에이전트 UI 시험 ≠ 사람 사용성 실험`, `생성 시안 ≠ 구현`, `로컬 검증 ≠ 배포 완료`를 구분한다.
-
-보기 좋은 화면을 위해 미확인·미측정·부분 결과·실패·stale을 숨기거나 성공으로 바꾸지 않는다. 단계 위치를 완료율로, 제안을 승인으로, 접수를 처리 완료로 표현하지 않는다. 새 요청이나 화면 언어 변경이 기존 기록의 의미를 조용히 바꾸게 하지 않는다.
-
-## 완료와 인계
-
-- **설계만 요청:** 과업/완료 조건, 코드 근거, 현재 화면 관찰, 레퍼런스 적용표, 상태 계약, 비교 시안, 개선 가설/검증 과업과 한계를 전달한다. 선택 전 구현을 완료했다고 말하지 않는다.
-- **구현까지 요청:** 선택 시안과 차이, 정상 사용 흐름, 실제 검증 결과, 남은 범위, 실행 가능한 미리보기와 파일을 전달한다. 변경 ID로 [관찰한 자료·적용 근거](references/audit-and-research.md#설계로-연결)와 [구현 위치·전후 증거·검증 항목별 주장/근거](references/implementation-and-validation.md#마감)을 연결해 보고한다. 적용 확인과 개선 효과를 구분한다.
-- **검증/보고만 요청:** 관련 변경과 제공/직접확인 증거 범위만 보고하고 전체 설계 양식이나 추가 구현을 강제하지 않는다.
-- 산출물은 작업 공간의 정해진 위치에 보존한다. 임시 출력과 검토용 최종 산출물을 구분하고 기존 문서·dirty·다른 작업을 덮어쓰지 않는다.
-- 중요한 결과를 먼저 말한다. 전체 근거는 문서에 두되 최종 답변이 앞선 진행 메시지 없이도 이해되게 한다.
