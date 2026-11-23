@@ -23,7 +23,7 @@ description: "Design or substantially redesign a frontend from actual code, user
 | S1 | 계약: 사람·여정·이상 상태·고정 케이스·상태 | `00-contract.md` (```gate 블록 포함) | `--stage 1` | [guardrails/references/method.md](references/guardrails/references/method.md), [discovery-and-tasks.md](references/discovery-and-tasks.md) |
 | S2 | 비포 캡처 | `01-before/before-<screen>-<width>.png\|webp` | `--stage 2` | [audit-and-research.md](references/audit-and-research.md) |
 | S3 | 레퍼런스 방문·캡처 | `02-refs/INDEX.md`, `02-refs/ref-*.png` | `--stage 3` | [audit-and-research.md](references/audit-and-research.md), [guides/01](references/guides/01-good-ui-ux-reference-guide.md), [guides/02](references/guides/02-no-ai-slop-mobile-web-ui-ux.md), [site-list.json](references/site-list.json) |
-| S4 | 시안(기본 3개) + 시안별 출처 보드 + 안티슬롭 | `03-alts/alt-<id>-<width>.*`, html/css 원본, `03-alts/boards/board-<id>.*`, `board.md` | `--stage 4` | [design-and-ideation.md](references/design-and-ideation.md), [anti-slop.md](references/anti-slop.md) |
+| S4 | 시안(기본 3개) + 시안별 출처 보드 + 비포·시안 비교판 + 안티슬롭 | `03-alts/alt-<id>-<width>.*`, html/css 원본, `board.md`, `scripts/compose.mjs`로 만든 `03-alts/boards/board-<id>.png`와 `03-alts/compare/compare-<id>-<width>.png` | `--stage 4` | [design-and-ideation.md](references/design-and-ideation.md), [anti-slop.md](references/anti-slop.md) |
 | S5 | 가드레일·검증 판정표 | `04-verdicts.md` | `--stage 5` | [guardrails/](references/guardrails/README.md), [verification/](references/verification/README.md) |
 | S6 | 구현 + 애프터 캡처 (S2와 같은 크기·상태) | `05-after/after-<screen>-<width>.*` | `--stage 6` | [implementation-and-validation.md](references/implementation-and-validation.md), [verification/references/browser-evidence.md](references/verification/references/browser-evidence.md) |
 | S7 | 보고 (이미지 본문 삽입, PR 링크) | `06-report.md` | `--stage 7` | [implementation-and-validation.md](references/implementation-and-validation.md) |
@@ -52,7 +52,9 @@ description: "Design or substantially redesign a frontend from actual code, user
 ### S4 시안·출처 보드·안티슬롭
 
 - 같은 사례·데이터·상태·폭으로 구조가 다른 시안을 기본 3개 만든다(사용자가 정한 수가 우선). 색만 바꾼 것은 다른 시안이 아니다.
-- 시안마다 출처 보드 이미지를 만든다. 왼쪽에 레퍼런스의 해당 부분, 오른쪽에 시안의 요소, 아래에 "가져온 것 / 바꾼 것"을 둔다. `board.md`에는 요소별로 같은 내용을 적는다.
+- 출처 보드는 손으로 그리지 않는다. `board.md`의 요소마다 레퍼런스에서 가져온 부분의 좌표(`ref_crop`)와 시안에서 그 요소의 좌표(`alt_crop`)를 `x,y,w,h` 픽셀로 적고, `node <skill>/scripts/compose.mjs <work> all`로 보드 이미지(왼쪽 레퍼런스 부분, 오른쪽 시안 요소)를 만든다. "가져온 것 / 바꾼 것"은 `board.md`와 보고서에 적는다. 게이트는 좌표가 이미지 안에 있는지, 보드가 지금의 `board.md`·레퍼런스·시안 파일로 만들어졌는지(생성 기록의 해시)를 검사한다. `board.md`나 원본을 고친 뒤 다시 만들지 않으면 FAIL이다.
+- 기존 화면이 있으면(`existing_ui: yes`) 같은 스크립트가 시안 × 폭마다 비포·시안 비교판(`03-alts/compare/compare-<id>-<width>.png`, 왼쪽 비포·오른쪽 시안)을 만든다. 비교할 화면은 계약의 `compare_screen`(기본은 `screens`의 첫 화면)이다. 없거나 원본과 맞지 않으면 FAIL이다.
+- 게이트가 확인하는 것은 "선언한 좌표를 그대로 잘라 보였다"까지다. 그 좌표가 정말 가져온 부분인지는 보고서의 보드 이미지를 보고 사람이 판단한다.
 - [anti-slop.md](references/anti-slop.md)의 AS-1~AS-5를 시안마다 자가 점검한다. 카드의 장식용 왼쪽 강조 막대, 모든 항목의 테두리+둥근 카드를 패널 안에 다시 중첩한 구조, 항목마다 반복되는 색 pill 배지, 사방에 쓴 accent 색이 대상이다. 게이트가 html/css를 검사한다.
 
 ### S5 판정
@@ -65,7 +67,7 @@ description: "Design or substantially redesign a frontend from actual code, user
 
 ### S7 보고
 
-`06-report.md`와 대화창 보고에 출처 보드, 비포·애프터 쌍을 **이미지로** 본문에 넣는다. 파일 경로만 주고 끝내지 않는다. 산출물은 저장소 브랜치·PR로 올리고 링크를 준다. 게이트 출력의 `RESULT:` 줄을 붙인다.
+`06-report.md`와 대화창 보고에 출처 보드, 비포·시안 비교판, 비포·애프터 쌍을 **이미지로** 본문에 넣는다. 파일 경로만 주고 끝내지 않는다. 산출물은 저장소 브랜치·PR로 올리고 링크를 준다. 게이트 출력의 `RESULT:` 줄을 붙인다.
 
 ## 위임
 

@@ -6,6 +6,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
+import { isFile, sha256, parseTables, findTable, clean, isEmpty, imageDims, findImage, parseGateBlock, kvList, parseCrop, cropFits, cropKey, altImageStem } from './lib.mjs';
 
 const SKILL_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -46,7 +47,6 @@ const pass = (m) => rec('PASS', m), fail = (m) => rec('FAIL', m), warn = (m) => 
 const W = (...p) => path.join(work, ...p);
 const rel = (p) => path.relative(work, p).replace(/\\/g, '/');
 function readText(p) { try { return fs.readFileSync(p, 'utf8'); } catch { return null; } }
-function isFile(p) { try { return fs.statSync(p).isFile(); } catch { return false; } }
 function listDir(p) { try { return fs.readdirSync(p); } catch { return []; } }
 function walk(dir) {
   const out = [];
@@ -67,83 +67,6 @@ function countLines(s) {
   const n = (s.match(/\n/g) || []).length;
   return s.endsWith('\n') ? n : n + 1;
 }
-function sha256(p) { return crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex'); }
-
-// Markdown tables -> [{headers, rows:[{cells, line}]}]
-function splitRow(line) {
-  let s = line.trim();
-  if (s.startsWith('|')) s = s.slice(1);
-  if (s.endsWith('|') && !s.endsWith('\\|')) s = s.slice(0, -1);
-  const cells = []; let buf = '';
-  for (let i = 0; i < s.length; i++) {
-    if (s[i] === '\\' && s[i + 1] === '|') { buf += '|'; i++; continue; }
-    if (s[i] === '|') { cells.push(buf.trim()); buf = ''; continue; }
-    buf += s[i];
-  }
-  cells.push(buf.trim());
-  return cells;
-}
-function parseTables(md) {
-  const lines = md.split(/\r?\n/); const tables = [];
-  for (let i = 0; i < lines.length - 1; i++) {
-    if (!lines[i].trim().startsWith('|')) continue;
-    if (!/^\s*\|?\s*:?-{2,}:?\s*(\|\s*:?-{2,}:?\s*)*\|?\s*$/.test(lines[i + 1])) continue;
-    const headers = splitRow(lines[i]).map(normHeader);
-    const rows = []; let j = i + 2;
-    for (; j < lines.length && lines[j].trim().startsWith('|'); j++) rows.push({ cells: splitRow(lines[j]), line: j + 1 });
-    tables.push({ headers, rows, line: i + 1 });
-    i = j - 1;
-  }
-  return tables;
-}
-function normHeader(h) { return clean(h).toLowerCase().replace(/\s+/g, ''); }
-// strip backticks / emphasis; unwrap [text](target) to target
-function clean(c) {
-  let s = (c || '').trim();
-  const link = s.match(/^!?\[[^\]]*\]\(([^)\s]+)[^)]*\)$/);
-  if (link) s = link[1];
-  return s.replace(/^`+|`+$/g, '').replace(/^\*\*|\*\*$/g, '').trim();
-}
-function findTable(tables, cols) {
-  const want = cols.map(normHeader);
-  const t = tables.find((t) => want.every((c) => t.headers.includes(c)));
-  if (!t) return null;
-  const idx = Object.fromEntries(want.map((c) => [c, t.headers.indexOf(c)]));
-  return { ...t, get: (row, col) => clean(row.cells[idx[normHeader(col)]] ?? '') };
-}
-const EMPTY = /^(|-|—|–|tbd|todo|\.\.\.|…|\{\{.*\}\})$/i;
-const isEmpty = (v) => EMPTY.test((v || '').trim());
-
-// ---------- images (PNG IHDR, WebP VP8/VP8L/VP8X) ----------
-function imageDims(p) {
-  let fd; const buf = Buffer.alloc(64);
-  try { fd = fs.openSync(p, 'r'); fs.readSync(fd, buf, 0, 64, 0); } catch (e) { return { error: `unreadable (${e.code || e.message})` }; } finally { if (fd !== undefined) fs.closeSync(fd); }
-  if (buf.readUInt32BE(0) === 0x89504e47 && buf.readUInt32BE(4) === 0x0d0a1a0a) {
-    if (buf.toString('ascii', 12, 16) !== 'IHDR') return { error: 'PNG without IHDR as first chunk' };
-    return { type: 'png', w: buf.readUInt32BE(16), h: buf.readUInt32BE(20) };
-  }
-  if (buf.toString('ascii', 0, 4) === 'RIFF' && buf.toString('ascii', 8, 12) === 'WEBP') {
-    const fourcc = buf.toString('ascii', 12, 16);
-    if (fourcc === 'VP8 ') {
-      if (buf[23] !== 0x9d || buf[24] !== 0x01 || buf[25] !== 0x2a) return { error: 'WebP VP8 start code missing' };
-      return { type: 'webp/VP8', w: buf.readUInt16LE(26) & 0x3fff, h: buf.readUInt16LE(28) & 0x3fff };
-    }
-    if (fourcc === 'VP8L') {
-      if (buf[20] !== 0x2f) return { error: 'WebP VP8L signature missing' };
-      const b1 = buf[21], b2 = buf[22], b3 = buf[23], b4 = buf[24];
-      return { type: 'webp/VP8L', w: 1 + (((b2 & 0x3f) << 8) | b1), h: 1 + (((b4 & 0x0f) << 10) | (b3 << 2) | ((b2 & 0xc0) >> 6)) };
-    }
-    if (fourcc === 'VP8X') return { type: 'webp/VP8X', w: 1 + buf.readUIntLE(24, 3), h: 1 + buf.readUIntLE(27, 3) };
-    return { error: `unknown WebP chunk ${JSON.stringify(fourcc)}` };
-  }
-  return { error: 'not a PNG or WebP file' };
-}
-const IMG_EXT = ['png', 'webp'];
-function findImage(dir, stem) {
-  for (const e of IMG_EXT) { const p = path.join(dir, `${stem}.${e}`); if (isFile(p)) return p; }
-  return null;
-}
-
 // ---------- colors ----------
 const NAMED = { red: '#ff0000', blue: '#0000ff', green: '#008000', orange: '#ffa500', purple: '#800080', violet: '#ee82ee', teal: '#008080', pink: '#ffc0cb', yellow: '#ffff00', gold: '#ffd700', crimson: '#dc143c', tomato: '#ff6347', royalblue: '#4169e1', dodgerblue: '#1e90ff', indigo: '#4b0082', magenta: '#ff00ff', cyan: '#00ffff', lime: '#00ff00', black: '#000000', white: '#ffffff', gray: '#808080', grey: '#808080', silver: '#c0c0c0', lightgray: '#d3d3d3', lightgrey: '#d3d3d3', gainsboro: '#dcdcdc', whitesmoke: '#f5f5f5', darkgray: '#a9a9a9', dimgray: '#696969' };
 function parseColor(tok) {
@@ -546,11 +469,9 @@ function siteList() {
 function s1() {
   const md = readText(W('00-contract.md'));
   if (md === null) { fail('00-contract.md missing'); return; }
-  const block = md.match(/```gate\s*\n([\s\S]*?)```/);
-  if (!block) { fail('00-contract.md has no ```gate block (widths, screens, tasks, ref_tags, existing_ui, scope)'); return; }
-  const kv = {};
-  for (const line of block[1].split(/\r?\n/)) { const m = line.match(/^\s*([\w-]+)\s*:\s*(.*)$/); if (m) kv[m[1].toLowerCase()] = m[2].trim(); }
-  const list = (k) => (kv[k] || '').split(/[,\s]+/).map((s) => s.trim()).filter(Boolean);
+  const kv = parseGateBlock(md);
+  if (!kv) { fail('00-contract.md has no ```gate block (widths, screens, tasks, ref_tags, existing_ui, scope)'); return; }
+  const list = (k) => kvList(kv, k);
   const c = { widths: list('widths').map(Number), screens: list('screens'), tasks: list('tasks'), refTags: list('ref_tags'), existing: (kv.existing_ui || '').toLowerCase(), scope: (kv.scope || '').toLowerCase(), alternatives: kv.alternatives ? Number(kv.alternatives) : 3, altSource: (kv.alt_source || 'html').toLowerCase(), kv };
   let ok = true;
   const bad = (m) => { fail(m); ok = false; };
@@ -685,12 +606,25 @@ function s3() {
 }
 
 // ---------- S4 ----------
+// compose.mjs writes <image>.json; the image and every source must be unchanged since composing.
+function composedManifest(img, kind) {
+  const jp = img.replace(/\.(png|webp)$/i, '.json'); const label = rel(img);
+  let m; try { m = JSON.parse(fs.readFileSync(jp, 'utf8')); } catch { fail(`${label}: ${rel(jp)} missing or invalid; make the image with scripts/compose.mjs`); return null; }
+  if (m.generator !== 'compose.mjs' || m.kind !== kind) { fail(`${label}: manifest is not a compose.mjs ${kind}`); return null; }
+  if (m.output_sha256 !== sha256(img)) { fail(`${label}: image changed after composing; rerun scripts/compose.mjs`); return null; }
+  for (const i of m.inputs || []) {
+    const p = W(i.file);
+    if (!isFile(p)) { fail(`${label}: source ${i.file} missing`); return null; }
+    if (sha256(p) !== i.sha256) { fail(`${label}: source ${i.file} changed after composing; rerun scripts/compose.mjs`); return null; }
+  }
+  return m;
+}
 const AS_IDS = ['AS-1', 'AS-2', 'AS-3', 'AS-4', 'AS-5'];
 function s4() {
   if (!needContract('alternatives')) return;
   if (contract.scope === 'small-fix') { na('alternatives: scope small-fix (selected design is kept)'); return; }
   const dir = W('03-alts');
-  const ids = new Set();
+  const ids = new Set(); const boardImg = new Map();
   for (const n of listDir(dir)) { const m = n.match(/^alt-([a-z0-9]+)-(\d+)\.(png|webp)$/i); if (m) ids.add(m[1].toLowerCase()); }
   if (ids.size < contract.alternatives) fail(`03-alts: ${ids.size} alternative(s) (${[...ids].join(',') || 'none'}); need >= ${contract.alternatives}`);
   else pass(`03-alts: ${ids.size} alternative(s): ${[...ids].join(', ')}`);
@@ -702,28 +636,43 @@ function s4() {
     }
     const b = findImage(path.join(dir, 'boards'), `board-${id}`);
     if (!b) fail(`03-alts/boards/board-${id}.(png|webp) missing (provenance board image)`);
-    else { const d = imageDims(b); if (d.error) fail(`${rel(b)}: ${d.error}`); }
+    else { const d = imageDims(b); if (d.error) fail(`${rel(b)}: ${d.error}`); else boardImg.set(id, b); }
   }
   const md = readText(path.join(dir, 'boards', 'board.md'));
   if (md === null) fail('03-alts/boards/board.md missing');
   else {
     const tables = parseTables(md);
-    const t = findTable(tables, ['alt', 'element', 'ref_file', '가져온 것', '바꾼 것']);
-    if (!t) fail('board.md: provenance table (alt|element|ref_file|가져온 것|바꾼 것) missing');
+    const t = findTable(tables, ['alt', 'element', 'ref_file', 'ref_crop', 'alt_crop', '가져온 것', '바꾼 것']);
+    if (!t) fail('board.md: provenance table (alt|element|ref_file|ref_crop|alt_crop|가져온 것|바꾼 것) missing');
     else {
-      const per = new Map(); let ok = true;
+      const per = new Map(); const expect = new Map(); let ok = true;
       for (const row of t.rows) {
         const alt = t.get(row, 'alt').toLowerCase().replace(/^alt-/, '');
         const ref = t.get(row, 'ref_file'), took = t.get(row, '가져온 것'), changed = t.get(row, '바꾼 것'), el = t.get(row, 'element');
         const label = `board.md line ${row.line}`;
         if (!ids.has(alt)) { fail(`${label}: alt "${alt}" has no 03-alts/alt-${alt}-*.png`); ok = false; }
         if (isEmpty(el) || isEmpty(took) || isEmpty(changed)) { fail(`${label}: element / 가져온 것 / 바꾼 것 must all be filled`); ok = false; }
-        if (/^자체\s*설계$/.test(ref)) { /* own design: 가져온 것 must name its basis (checked as non-empty above) */ }
+        const own = /^자체\s*설계$/.test(ref);
+        const rc = parseCrop(t.get(row, 'ref_crop')), ac = parseCrop(t.get(row, 'alt_crop'));
+        const altImg = findImage(dir, altImageStem(alt, contract.widths));
+        if (!ac) { fail(`${label}: alt_crop must be x,y,w,h (pixels of ${altImageStem(alt, contract.widths)}.png)`); ok = false; }
+        else if (altImg && !cropFits(ac, imageDims(altImg))) { fail(`${label}: alt_crop ${cropKey(ac)} lies outside ${rel(altImg)}`); ok = false; }
+        if (own) { if (!isEmpty(t.get(row, 'ref_crop'))) { fail(`${label}: 자체 설계 row must have ref_crop "-"`); ok = false; } }
         else if (!isFile(path.resolve(W('02-refs'), ref))) { fail(`${label}: ref_file "${ref}" not found in 02-refs (use "자체 설계" for own elements)`); ok = false; }
+        else if (!rc) { fail(`${label}: ref_crop must be x,y,w,h (pixels of 02-refs/${ref}) showing the borrowed part`); ok = false; }
+        else if (!cropFits(rc, imageDims(path.resolve(W('02-refs'), ref)))) { fail(`${label}: ref_crop ${cropKey(rc)} lies outside 02-refs/${ref}`); ok = false; }
+        if (!expect.has(alt)) expect.set(alt, []);
+        expect.get(alt).push(`${own ? '자체 설계' : ref}|${cropKey(own ? null : rc)}|${cropKey(ac)}`);
         per.set(alt, (per.get(alt) || 0) + 1);
       }
       for (const id of ids) if (!per.get(id)) { fail(`board.md: alternative ${id} has no provenance rows`); ok = false; }
-      if (ok) pass(`board.md: provenance rows for every alternative (${[...per].map(([k, v]) => `${k}:${v}`).join(', ')})`);
+      if (ok) pass(`board.md: provenance rows with crops for every alternative (${[...per].map(([k, v]) => `${k}:${v}`).join(', ')})`);
+      for (const [id, img] of boardImg) {
+        const m = composedManifest(img, 'board'); if (!m) continue;
+        const got = (m.rows || []).map((r) => `${r.ref_file}|${r.ref_crop}|${r.alt_crop}`).sort().join('\n');
+        if (got !== (expect.get(id) || []).sort().join('\n')) fail(`${rel(img)}: rows differ from board.md (board.md edited after composing); rerun scripts/compose.mjs`);
+        else pass(`${rel(img)}: composed from board.md crops, sources unchanged (${m.rows.length} row(s))`);
+      }
     }
     const sc = findTable(tables, ['alt', 'check', 'result']);
     if (!sc) fail('board.md: anti-slop self-check table (alt|check|result) missing');
@@ -738,6 +687,24 @@ function s4() {
       }
       for (const id of ids) for (const a of AS_IDS) if (!seen.has(`${id}|${a}`)) { fail(`board.md: self-check ${a} missing for alternative ${id}`); ok = false; }
       if (ok) pass(`anti-slop self-check: ${AS_IDS.join(', ')} PASS for every alternative`);
+    }
+  }
+  if (contract.existing === 'yes') {
+    const screen = contract.kv.compare_screen || contract.screens[0];
+    if (!contract.screens.includes(screen)) fail(`compare_screen "${screen}" is not in screens`);
+    else {
+      let ok = 0;
+      for (const id of ids) for (const w of contract.widths) {
+        const p = findImage(path.join(dir, 'compare'), `compare-${id}-${w}`);
+        if (!p) { fail(`03-alts/compare/compare-${id}-${w}.(png|webp) missing (before-${screen}-${w} beside alt-${id}-${w}; run scripts/compose.mjs)`); continue; }
+        const m = composedManifest(p, 'compare'); if (!m) continue;
+        const files = (m.inputs || []).map((i) => i.file.toLowerCase());
+        const okB = files.some((f) => f === `01-before/before-${screen}-${w}.png` || f === `01-before/before-${screen}-${w}.webp`);
+        const okA = files.some((f) => f === `03-alts/alt-${id}-${w}.png` || f === `03-alts/alt-${id}-${w}.webp`);
+        if (!okB || !okA) { fail(`${rel(p)}: not composed from before-${screen}-${w} and alt-${id}-${w}`); continue; }
+        ok++;
+      }
+      if (ok && ok === ids.size * contract.widths.length) pass(`compare: ${ok} before/alternative image(s) composed from current files (screen ${screen})`);
     }
   }
   const sources = walk(dir).filter((p) => /\.(html?|css)$/i.test(p));
@@ -839,12 +806,13 @@ function s7() {
   const need = [];
   if (contract.scope !== 'small-fix') for (const n of listDir(W('03-alts', 'boards'))) if (/^board-.+\.(png|webp)$/i.test(n)) need.push(n);
   if (contract.existing === 'yes') for (const n of listDir(W('01-before'))) if (/^before-.+\.(png|webp)$/i.test(n)) need.push(n);
+  if (contract.existing === 'yes' && contract.scope !== 'small-fix') for (const n of listDir(W('03-alts', 'compare'))) if (/^compare-.+\.(png|webp)$/i.test(n)) need.push(n);
   if (contract.scope !== 'design-only') for (const n of listDir(W('05-after'))) if (/^after-.+\.(png|webp)$/i.test(n)) need.push(n);
   const notShown = need.filter((n) => !names.has(n.toLowerCase()));
   if (notShown.length) { fail(`06-report.md does not embed: ${notShown.join(', ')}`); ok = false; }
   if (!/https:\/\/github\.com\/[^\s)]+\/(pull\/\d+|tree\/[^\s)]+|blob\/[^\s)]+)/.test(md)) { fail('06-report.md has no GitHub PR/branch link'); ok = false; }
   if (!/RESULT:\s*(PASS|FAIL)/.test(md)) warn('06-report.md does not quote gate output (RESULT: line)');
-  if (ok) pass(`report: ${embeds.length} image(s) embedded inline, boards and before/after pairs shown, PR link present`);
+  if (ok) pass(`report: ${embeds.length} image(s) embedded inline, boards, before/alternative comparisons and before/after pairs shown, PR link present`);
 }
 
 // ---------- run ----------

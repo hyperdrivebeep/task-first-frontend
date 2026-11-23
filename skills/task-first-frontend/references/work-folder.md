@@ -9,7 +9,8 @@
   01-before/before-<screen>-<width>.png|webp S2
   02-refs/INDEX.md, ref-*.png|webp           S3
   03-alts/alt-<id>-<width>.png|webp          S4  + 원본 *.html / *.css (03-alts 아래 아무 위치)
-  03-alts/boards/board-<id>.png|webp         S4
+  03-alts/boards/board-<id>.png + .json      S4  (scripts/compose.mjs가 만든다)
+  03-alts/compare/compare-<id>-<width>.png + .json  S4  (existing_ui: yes, compose.mjs)
   03-alts/boards/board.md                    S4
   04-verdicts.md                             S5
   05-after/after-<screen>-<width>.png|webp   S6  (01-before와 같은 이름 뒷부분, 같은 픽셀 크기)
@@ -90,15 +91,17 @@ ref_tags 어휘: `screens`(실제 제품 화면), `flows`(과업 흐름 녹화),
 
 - `alt-<id>-<width>.png|webp`: 시안 id마다 계약의 모든 폭.
 - html/css 원본: 03-alts 아래 어디든 둔다. 게이트가 안티슬롭 검사를 한다([anti-slop.md](anti-slop.md)).
-- `boards/board-<id>.png|webp`: 시안마다 출처 보드 이미지 한 장 이상.
+- `boards/board-<id>.png`: 시안마다 출처 보드 한 장. `node <skill>/scripts/compose.mjs <work> boards`가 `board.md`의 좌표로 레퍼런스 부분(왼쪽)과 시안 요소(오른쪽)를 잘라 요소마다 한 줄씩 쌓고, 옆에 생성 기록 `board-<id>.json`(입력 파일, sha256, 좌표, 출력 sha256)을 쓴다. ffmpeg가 필요하다.
+- `compare/compare-<id>-<width>.png`: `existing_ui: yes`면 시안 × 폭마다 필요하다. `compose.mjs <work> compare`가 `01-before/before-<compare_screen>-<width>`(왼쪽)와 `alt-<id>-<width>`(오른쪽)를 나란히 붙이고 생성 기록을 쓴다. `compare_screen`은 ```gate 블록의 선택 키이며 기본값은 `screens`의 첫 화면이다.
+- 게이트는 생성 기록으로 검사한다: 출력 이미지가 기록과 같은지, 입력 파일이 그 뒤에 바뀌지 않았는지, 보드의 행이 지금의 `board.md` 행(파일·좌표)과 같은지. 하나라도 어긋나면 FAIL이고, 다시 만들면 된다.
 - `boards/board.md`: 두 표.
 
 ```markdown
 ## 출처
-| alt | element | ref_file | 가져온 것 | 바꾼 것 |
-| --- | --- | --- | --- | --- |
-| a | 자막 두 줄 | ref-languagereactor-netflix-dual-subtitles.png | 영어 위·한국어 아래 두 줄 배치 | 글자 크기 18→20px, 배경 막대 대신 그림자. 학습용 가독성 |
-| a | 오른쪽 패널 폭 | 자체 설계 | 근거: 기존 토큰 --panel-w 360px, 과업 T2 | 360→400px |
+| alt | element | ref_file | ref_crop | alt_crop | 가져온 것 | 바꾼 것 |
+| --- | --- | --- | --- | --- | --- | --- |
+| a | 자막 두 줄 | ref-languagereactor-netflix-dual-subtitles.png | 180,610,900,140 | 120,560,980,120 | 영어 위·한국어 아래 두 줄 배치 | 글자 크기 18→20px, 배경 막대 대신 그림자. 학습용 가독성 |
+| a | 오른쪽 패널 폭 | 자체 설계 | - | 1136,0,400,864 | 근거: 기존 토큰 --panel-w 360px, 과업 T2 | 360→400px |
 
 ## 안티슬롭 자가 점검
 | alt | check | result | note |
@@ -106,7 +109,7 @@ ref_tags 어휘: `screens`(실제 제품 화면), `flows`(과업 흐름 녹화),
 | a | AS-1 | PASS | 왼쪽 강조 막대 없음 |
 ```
 
-출처 표의 `ref_file`은 02-refs에 있는 파일이거나 `자체 설계`다. 자가 점검 표는 시안마다 AS-1~AS-5 다섯 행이 있어야 하고, `result`는 PASS/FAIL이다. FAIL이 있으면 게이트도 FAIL이다. 시안을 고친 뒤 다시 점검한다.
+출처 표의 `ref_file`은 02-refs에 있는 파일이거나 `자체 설계`다. `ref_crop`은 그 레퍼런스 이미지의 픽셀 좌표 `x,y,w,h`로, 가져온 부분만 감싼다(`자체 설계`면 `-`). `alt_crop`은 가장 넓은 폭의 시안 이미지(`alt-<id>-<최대 폭>`)에서 그 요소의 좌표다. 좌표가 이미지 밖이거나 형식이 틀리면 FAIL이다. 자가 점검 표는 시안마다 AS-1~AS-5 다섯 행이 있어야 하고, `result`는 PASS/FAIL이다. FAIL이 있으면 게이트도 FAIL이다. 시안을 고친 뒤 다시 점검한다.
 
 ## 04-verdicts.md (S5)
 
@@ -128,6 +131,6 @@ ref_tags 어휘: `screens`(실제 제품 화면), `flows`(과업 흐름 녹화),
 
 ## 06-report.md (S7)
 
-- 출처 보드(`board-*.png`), 비포(`before-*`), 애프터(`after-*`)를 모두 `![설명](경로)`나 `<img src>`로 본문에 넣는다. 로컬 경로는 작업 폴더 기준이고, 실제로 있어야 한다. PR에 올린 뒤의 raw URL도 받는다(파일 이름으로 대조).
+- 출처 보드(`board-*.png`), 비포·시안 비교판(`compare-*.png`), 비포(`before-*`), 애프터(`after-*`)를 모두 `![설명](경로)`나 `<img src>`로 본문에 넣는다. 로컬 경로는 작업 폴더 기준이고, 실제로 있어야 한다. PR에 올린 뒤의 raw URL도 받는다(파일 이름으로 대조).
 - GitHub PR 또는 브랜치 링크(`https://github.com/<owner>/<repo>/pull/<n>` 또는 `/tree/<branch>`)가 있어야 한다.
 - 마지막 게이트 출력의 `RESULT:` 줄을 붙인다(없으면 WARN).

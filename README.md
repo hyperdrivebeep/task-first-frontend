@@ -22,10 +22,10 @@ node skills/task-first-frontend/scripts/gate.mjs <work> --stage N
 | S1 | 계약 — 사람·여정·이상 상태·고정 케이스(1440/390)·상태, 과업 정의 | `00-contract.md` |
 | S2 | 비포 캡처 — 바꾸기 전 실제 화면 | `01-before/` |
 | S3 | 레퍼런스 — 관련 사이트 방문·캡처, 건너뛰면 허용된 이유만 | `02-refs/INDEX.md`, `02-refs/ref-*` |
-| S4 | 시안(기본 3개) + 시안별 출처 보드 + 안티슬롭 검사 | `03-alts/`, `03-alts/boards/` |
+| S4 | 시안(기본 3개) + 좌표로 잘라 만든 출처 보드 + 비포·시안 비교판(`scripts/compose.mjs`) + 안티슬롭 검사 | `03-alts/`, `03-alts/boards/`, `03-alts/compare/` |
 | S5 | 가드레일·검증 판정표 (rule ID별 PASS/FAIL/UNVERIFIED/N/A) | `04-verdicts.md` |
 | S6 | 구현 + 같은 크기·상태의 애프터 캡처 | `05-after/` |
-| S7 | 보고 — 출처 보드와 비포·애프터를 이미지로 넣고 PR 링크 | `06-report.md` |
+| S7 | 보고 — 출처 보드, 비포·시안 비교판, 비포·애프터를 이미지로 넣고 PR 링크 | `06-report.md` |
 
 이미 선택된 UI의 작은 수정(`scope: small-fix`)에는 전체 조사와 시안 선택을 다시 강제하지 않습니다(S3·S4 N/A). 설계만 요청하면 설계까지 수행하며, 스킬 자체가 배포·공개·유료 실행 권한을 부여하지 않습니다. 게이트 PASS는 형식과 존재의 증명이며 사용성 증명이 아닙니다.
 
