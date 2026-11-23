@@ -103,3 +103,11 @@ export const cropFits = (c, d) => c[0] + c[2] <= d.w && c[1] + c[3] <= d.h;
 export const cropKey = (c) => (c ? c.join(',') : '-');
 // image the alt_crop column refers to: the widest declared width
 export const altImageStem = (id, widths) => `alt-${id}-${Math.max(...widths)}`;
+// optional board.md column alt_image: another screen of the same alternative (a PNG/WebP file name in 03-alts)
+export function boardAltImage(t, row, altsDir, alt, widths) {
+  const i = t.headers.indexOf('alt_image');
+  const name = i >= 0 ? clean(row.cells[i] ?? '') : '';
+  if (!name || /^-+$/.test(name)) return { name: altImageStem(alt, widths), file: findImage(altsDir, altImageStem(alt, widths)) };
+  const file = path.join(altsDir, path.basename(name));
+  return { name, file: /\.(png|webp)$/i.test(name) && isFile(file) ? file : null };
+}

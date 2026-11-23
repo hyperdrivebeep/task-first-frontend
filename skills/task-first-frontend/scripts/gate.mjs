@@ -6,7 +6,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
-import { isFile, sha256, parseTables, findTable, clean, isEmpty, imageDims, findImage, parseGateBlock, kvList, parseCrop, cropFits, cropKey, altImageStem } from './lib.mjs';
+import { isFile, sha256, parseTables, findTable, clean, isEmpty, imageDims, findImage, parseGateBlock, kvList, parseCrop, cropFits, cropKey, boardAltImage } from './lib.mjs';
 
 const SKILL_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -654,22 +654,23 @@ function s4() {
         if (isEmpty(el) || isEmpty(took) || isEmpty(changed)) { fail(`${label}: element / 가져온 것 / 바꾼 것 must all be filled`); ok = false; }
         const own = /^자체\s*설계$/.test(ref);
         const rc = parseCrop(t.get(row, 'ref_crop')), ac = parseCrop(t.get(row, 'alt_crop'));
-        const altImg = findImage(dir, altImageStem(alt, contract.widths));
-        if (!ac) { fail(`${label}: alt_crop must be x,y,w,h (pixels of ${altImageStem(alt, contract.widths)}.png)`); ok = false; }
+        const { name: altName, file: altImg } = boardAltImage(t, row, dir, alt, contract.widths);
+        if (!altImg) { fail(`${label}: alternative image "${altName}" not found in 03-alts`); ok = false; }
+        if (!ac) { fail(`${label}: alt_crop must be x,y,w,h (pixels of ${altName})`); ok = false; }
         else if (altImg && !cropFits(ac, imageDims(altImg))) { fail(`${label}: alt_crop ${cropKey(ac)} lies outside ${rel(altImg)}`); ok = false; }
         if (own) { if (!isEmpty(t.get(row, 'ref_crop'))) { fail(`${label}: 자체 설계 row must have ref_crop "-"`); ok = false; } }
         else if (!isFile(path.resolve(W('02-refs'), ref))) { fail(`${label}: ref_file "${ref}" not found in 02-refs (use "자체 설계" for own elements)`); ok = false; }
         else if (!rc) { fail(`${label}: ref_crop must be x,y,w,h (pixels of 02-refs/${ref}) showing the borrowed part`); ok = false; }
         else if (!cropFits(rc, imageDims(path.resolve(W('02-refs'), ref)))) { fail(`${label}: ref_crop ${cropKey(rc)} lies outside 02-refs/${ref}`); ok = false; }
         if (!expect.has(alt)) expect.set(alt, []);
-        expect.get(alt).push(`${own ? '자체 설계' : ref}|${cropKey(own ? null : rc)}|${cropKey(ac)}`);
+        expect.get(alt).push(`${own ? '자체 설계' : ref}|${cropKey(own ? null : rc)}|${altImg ? path.basename(altImg) : '?'}|${cropKey(ac)}`);
         per.set(alt, (per.get(alt) || 0) + 1);
       }
       for (const id of ids) if (!per.get(id)) { fail(`board.md: alternative ${id} has no provenance rows`); ok = false; }
       if (ok) pass(`board.md: provenance rows with crops for every alternative (${[...per].map(([k, v]) => `${k}:${v}`).join(', ')})`);
       for (const [id, img] of boardImg) {
         const m = composedManifest(img, 'board'); if (!m) continue;
-        const got = (m.rows || []).map((r) => `${r.ref_file}|${r.ref_crop}|${r.alt_crop}`).sort().join('\n');
+        const got = (m.rows || []).map((r) => `${r.ref_file}|${r.ref_crop}|${r.alt_file}|${r.alt_crop}`).sort().join('\n');
         if (got !== (expect.get(id) || []).sort().join('\n')) fail(`${rel(img)}: rows differ from board.md (board.md edited after composing); rerun scripts/compose.mjs`);
         else pass(`${rel(img)}: composed from board.md crops, sources unchanged (${m.rows.length} row(s))`);
       }
