@@ -1,0 +1,67 @@
+Candidate catalog - evidence only; not executable requirements.
+
+# Design principles: extraction record
+
+Source: https://developer.apple.com/design/human-interface-guidelines/design-principles
+Snapshot fetched: 2026-11-03 KST. Recorded reading: 2026-11-03 KST. Reader: Earlier reader; inherited note.
+Snapshot SHA-256: 2d9252918e118bce3cd1a9c31bad601b79faf13b26e5f6e86a671be70e68c148
+Input words: 1460. Candidate rule records: 39. Exclusion blocks: 1.
+Original note: p020-design-principles/design-principles.md.
+Adopted source-linked rules: F-01
+
+Candidate MUST wording may overstate source advice or include native assumptions. The curated rules and standards-and-scope.md take precedence after approval. Coverage counts describe extraction records, not conformance or independently verified defects. The original note is preserved below without silently rewriting historical evidence.
+
+---
+
+## Design principles
+URL: https://developer.apple.com/design/human-interface-guidelines/design-principles
+
+Universal rules:
+- MUST identify what matters most to the people you design for before designing. | topic: Design principles | source: https://developer.apple.com/design/human-interface-guidelines/design-principles | why: Design starts with intention tied to the people served. | check: not screenshot-checkable: process decision made before design.
+- MUST focus effort on making the most important features great. | topic: Design principles | source: https://developer.apple.com/design/human-interface-guidelines/design-principles | why: A product with a clear use helps people meet their goals. | check: not screenshot-checkable: prioritization decision, not a visual state.
+- MUST check at every stage of development whether the design serves what the product is for. | topic: Design principles | source: https://developer.apple.com/design/human-interface-guidelines/design-principles | why: Keeps the design oriented toward genuine usefulness. | check: not screenshot-checkable: review practice across development stages.
+- MUST define what sets the product apart and reflect it in the design. | topic: Design principles | source: https://developer.apple.com/design/human-interface-guidelines/design-principles | why: Differentiation should show in the design itself. | check: not screenshot-checkable: strategy decision about differentiation.
+- MUST investigate existing solutions. | topic: Design principles | source: https://developer.apple.com/design/human-interface-guidelines/design-principles | why: Investigation prevents re-creating what already exists. | check: not screenshot-checkable: research activity.
+- MUST NOT re-create existing solutions. | topic: Design principles | source: https://developer.apple.com/design/human-interface-guidelines/design-principles | why: Re-creating existing solutions wastes effort and weakens differentiation. | check: not screenshot-checkable: design-decision rule.
+- MUST get people directly to the task or content they came for. | topic: Design principles | source: https://developer.apple.com/design/human-interface-guidelines/design-principles | why: People use the product to get things done. | check: desktop 1440px and mobile 390px screenshot check
+- MUST NOT lock people into specific flows or modes. | topic: Design principles | source: https://developer.apple.com/design/human-interface-guidelines/design-principles | why: Freedom to explore makes the interface more inviting. | check: not screenshot-checkable: navigation logic, not a single visual state.
+- MUST make a required guided flow easy to skip or escape. | topic: Design principles | source: https://developer.apple.com/design/human-interface-guidelines/design-principles | why: People should reach the main experience quickly. | check: desktop 1440px and mobile 390px screenshot check
+- MUST let people reverse an action or return to a previous state. | topic: Design principles | source: https://developer.apple.com/design/human-interface-guidelines/design-principles | why: Knowing they can undo lets people explore freely. | check: not screenshot-checkable: behavior that needs interaction testing.
+- MUST make recovery from mistakes cost people little time or work. | topic: Design principles | source: https://developer.apple.com/design/human-interface-guidelines/design-principles | why: Recovery from the unexpected should not cost people their work. | check: not screenshot-checkable: behavior that needs interaction testing.
+- MUST state clearly what the product does and why. | topic: Design principles | source: https://developer.apple.com/design/human-interface-guidelines/design-principles | why: Transparency builds trust from the first interaction. | check: desktop 1440px and mobile 390px screenshot check
+- MUST give a clear rationale when asking for permission. | topic: Design principles | source: https://developer.apple.com/design/human-interface-guidelines/design-principles | why: People decide better when they understand why access is requested. | check: desktop 1440px and mobile 390px screenshot check
+- MUST state clearly what data is collected and how it is used. | topic: Design principles | source: https://developer.apple.com/design/human-interface-guidelines/design-principles | why: Data handling must be transparent to earn trust. | check: desktop 1440px and mobile 390px screenshot check
+- MUST collect only the information the product needs to function. | topic: Design principles | source: https://developer.apple.com/design/human-interface-guidelines/design-principles | why: Limiting collection reduces risk to people's information. | check: not screenshot-checkable: data-collection practice.
+- MUST protect people's information and put protections in place against misuse and harm. | topic: Design principles | source: https://developer.apple.com/design/human-interface-guidelines/design-principles | why: People trust the product to keep their data safe. | check: not screenshot-checkable: security and privacy engineering practice.
+- MUST draw on concepts people already know from the real world and other software. | topic: Design principles | source: https://developer.apple.com/design/human-interface-guidelines/design-principles | why: Familiar concepts make the interface feel intuitive. | check: desktop 1440px and mobile 390px screenshot check
+- MUST keep visuals and interactions consistent once a behavior or appearance is established for an element. | topic: Design principles | source: https://developer.apple.com/design/human-interface-guidelines/design-principles | why: Consistency helps people learn faster and trust new interactions. | check: desktop 1440px and mobile 390px screenshot check
+- MUST show when controls are available. | topic: Design principles | source: https://developer.apple.com/design/human-interface-guidelines/design-principles | why: People need clear signals about what they can act on. | check: desktop 1440px and mobile 390px screenshot check
+- MUST indicate when content changes. | topic: Design principles | source: https://developer.apple.com/design/human-interface-guidelines/design-principles | why: People stay informed and in control when changes are signaled. | check: desktop 1440px and mobile 390px screenshot check
+- MUST treat accessibility as a priority from the start. | topic: Design principles | source: https://developer.apple.com/design/human-interface-guidelines/design-principles | why: Inclusive design reaches the broadest audience. | check: not screenshot-checkable: accessibility is a process priority; audit it with dedicated accessibility tooling.
+- MUST design for the range of people's experiences, perspectives, and needs. | topic: Design principles | source: https://developer.apple.com/design/human-interface-guidelines/design-principles | why: Diverse users may encounter the design. | check: not screenshot-checkable: audience and research practice.
+- MUST keep content and controls in consistent, predictable positions across platforms and configurations. | topic: Design principles | source: https://developer.apple.com/design/human-interface-guidelines/design-principles | why: Predictable placement preserves the person's context. | check: desktop 1440px and mobile 390px screenshot check
+- MUST use natural animations to ease transitions. | topic: Design principles | source: https://developer.apple.com/design/human-interface-guidelines/design-principles | why: Animation helps people keep their context during transitions. | check: not screenshot-checkable: motion behavior cannot be judged from a still frame.
+- MUST support a variety of input methods, including voice, touch, and keyboard. | topic: Design principles | source: https://developer.apple.com/design/human-interface-guidelines/design-principles | why: More input methods let more people use the product their way. | check: not screenshot-checkable: input behavior needs interaction testing.
+- MUST give each platform the product supports the same level of care. | topic: Design principles | source: https://developer.apple.com/design/human-interface-guidelines/design-principles | why: The software should feel polished wherever it runs. | check: desktop 1440px and mobile 390px screenshot check
+- MUST include only what is necessary. | topic: Design principles | source: https://developer.apple.com/design/human-interface-guidelines/design-principles | why: Every element should earn its place. | check: desktop 1440px and mobile 390px screenshot check
+- MUST NOT equate simplicity with minimalism. | topic: Design principles | source: https://developer.apple.com/design/human-interface-guidelines/design-principles | why: The goal is a focused, useful experience, not an empty one. | check: not screenshot-checkable: design-intent rule.
+- MUST choose exactly the words needed to convey a concept or label a control. | topic: Design principles | source: https://developer.apple.com/design/human-interface-guidelines/design-principles | why: Concise wording is the most universal and helpful. | check: desktop 1440px and mobile 390px screenshot check
+- MUST establish a clear hierarchy so form and function are readily apparent. | topic: Design principles | source: https://developer.apple.com/design/human-interface-guidelines/design-principles | why: People reach outcomes when structure is clear. | check: desktop 1440px and mobile 390px screenshot check
+- MUST use recognizable controls and a consistent structure that shows where people are and what comes next. | topic: Design principles | source: https://developer.apple.com/design/human-interface-guidelines/design-principles | why: Structure helps people orient themselves. | check: desktop 1440px and mobile 390px screenshot check
+- MUST make every design decision deliberately. | topic: Design principles | source: https://developer.apple.com/design/human-interface-guidelines/design-principles | why: Quality shows in each decision. | check: not screenshot-checkable: process rule.
+- MUST prototype early. | topic: Design principles | source: https://developer.apple.com/design/human-interface-guidelines/design-principles | why: Early prototypes reveal problems before they are costly. | check: not screenshot-checkable: process rule.
+- MUST test the product in real-world settings. | topic: Design principles | source: https://developer.apple.com/design/human-interface-guidelines/design-principles | why: Testing confirms the product is durable, reliable, and high-performing. | check: not screenshot-checkable: testing practice in real environments.
+- MUST be willing to discard approaches that do not work. | topic: Design principles | source: https://developer.apple.com/design/human-interface-guidelines/design-principles | why: Iteration requires dropping failed ideas. | check: not screenshot-checkable: process rule.
+- MUST keep the interface current with the latest platform capabilities and design patterns. | topic: Design principles | source: https://developer.apple.com/design/human-interface-guidelines/design-principles | why: Shipping is not the finish line. | check: not screenshot-checkable: maintenance practice.
+- MUST identify the emotion the experience should evoke and let it shape the design. | topic: Design principles | source: https://developer.apple.com/design/human-interface-guidelines/design-principles | why: Different products should feel different to use. | check: not screenshot-checkable: design-intent rule.
+- MUST NOT let the pursuit of delight get in the way of the product's core purpose. | topic: Design principles | source: https://developer.apple.com/design/human-interface-guidelines/design-principles | why: People are trying to accomplish a task. | check: not screenshot-checkable: priority rule.
+- MUST consider each interaction, including error messages, as a chance to express the product's character. | topic: Design principles | source: https://developer.apple.com/design/human-interface-guidelines/design-principles | why: Small moments shape how people feel about the product. | check: desktop 1440px and mobile 390px screenshot check
+
+Apple-specific (excluded):
+- Platform system patterns for displaying alerts and offering choices (page: "use system patterns to display alerts and offer choices") | excluded because it refers to Apple platform system UI.
+
+Persona and journey notes:
+- None stated on this page.
+
+COVERAGE:
+- design-principles: read, approx 1400 words, 38 universal rules, 1 excluded

@@ -1,5 +1,7 @@
 # 정보 구조와 비교 시안
 
+S1(상태 계약)과 S4(시안·출처 보드) 단계 문서다. 산출물은 `00-contract.md`의 상태 절, `03-alts/alt-<id>-<width>.png`, html/css 원본, `board.md`, `scripts/compose.mjs`로 만든 `03-alts/boards/board-<id>.png`와 `03-alts/compare/compare-<id>-<width>.png`이고 형식은 [work-folder.md](work-folder.md)에 있다. 안티슬롭 점검은 [anti-slop.md](anti-slop.md). 게이트: `--stage 4`.
+
 ## 설계 브리프
 
 제품, 대상 사용자 가설, 표면(웹/모바일/데스크톱), 중심 과업, 완료 조건, 불편, 유지할 계약, 산출물을 짧게 재생한다. 명확하면 별도 진행 승인을 기다리지 않는다.
@@ -29,6 +31,16 @@
 결과 읽기 중심, 동시 비교 중심, 다음 과업 안내 중심은 Research Workbench의 예시일 뿐 강제 방향이 아니다. 각 방향에 해결할 문제, 장점, 예상 불편, 비교 과업을 붙인다. 새 기능과 현재 기능 재배치를 구분한다.
 
 테마 변경 요청이 없으면 실제 사용 중인 시각 언어를 바탕으로 한다. 색상·아이콘·둥근 카드만 바꾸는 것은 구조적 대안이 아니다.
+
+## 출처·변형 보고 (시안마다 필수)
+
+시안을 보여 줄 때 "어느 레퍼런스의 어느 부분을 가져왔고, 무엇을 바꿨는지"를 **캡처 이미지로** 함께 보인다. 글로만 "NotebookLM을 참고했다"고 쓰지 않는다.
+
+1. 시안의 주요 요소(배치, 패널, 컨트롤, 자막·카드 등)마다 출처를 정한다: 레퍼런스 캡처 파일, 그 안의 위치(예: 오른쪽 위 자막 설정 메뉴), 가져온 원리.
+2. 바꾼 것이 있으면 무엇을 어떻게 바꿨고 왜 바꿨는지 적는다(예: "자막 위 한 줄 → 영어·한국어 두 줄, 학습용이라").
+3. **출처 보드 이미지**는 손으로 그리지 않는다. `board.md` 출처 표에 요소마다 레퍼런스에서 가져온 부분의 좌표(`ref_crop`)와 시안에서 그 요소의 좌표(`alt_crop`)를 `x,y,w,h` 픽셀로 적고 `node <skill>/scripts/compose.mjs <work> all`을 실행한다. 스크립트가 왼쪽에 레퍼런스의 그 부분, 오른쪽에 시안의 그 요소를 잘라 붙여 `03-alts/boards/board-<id>.png`를 만든다. 만든 보드를 열어 좌표가 정말 가져온 부분을 감싸는지 눈으로 확인하고, 아니면 좌표를 고쳐 다시 만든다. "가져온 것 / 바꾼 것"은 `board.md`와 보고서에 적는다. 기존 화면이 있으면 같은 스크립트가 비포·시안 비교판(`03-alts/compare/`)도 만든다.
+4. 레퍼런스 없이 만든 요소는 "자체 설계"로 표시하고 근거(기존 토큰·과업 등)를 적는다. 출처를 지어내지 않는다.
+5. 대화창 보고에 출처 보드를 함께 표시한다. 파일 경로만 주고 끝내지 않는다.
 
 ## 이미지 생성
 
@@ -69,6 +81,8 @@ Use readable typography, spacing and alignment before surface boxes.
 Keep unknown values unknown. Do not invent results, scores, source metadata,
 approval, functionality, or navigation implying unsupported capabilities.
 Avoid nested cards, decorative dashboards, unnecessary gradients and clipped text.
+No decorative left accent bars, no colored pill badge on every item,
+accent color only for the primary action and key states.
 Date anchor: [verified current date if displayed].
 No planned option number in the image.
 ```

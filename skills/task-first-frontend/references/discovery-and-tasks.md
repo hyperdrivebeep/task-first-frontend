@@ -1,5 +1,7 @@
 # 코드에서 사용자 과업까지
 
+S1(계약) 단계 문서다. 사람·여정·이상 상태·고정 케이스 표는 [guardrails/references/method.md](guardrails/references/method.md)를, `00-contract.md`의 ```gate 블록은 [work-folder.md](work-folder.md)를 따른다. 아래 과업표는 계약의 `tasks` id로 이어진다. 게이트: `--stage 1`.
+
 ## 요청 해석
 
 | 입력 | 해석 | 첫 행동 |

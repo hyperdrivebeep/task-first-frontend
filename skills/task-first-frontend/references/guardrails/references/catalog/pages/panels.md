@@ -1,0 +1,52 @@
+Candidate catalog - evidence only; not executable requirements.
+
+# Panels: extraction record
+
+Source: https://developer.apple.com/design/human-interface-guidelines/panels
+Snapshot fetched: 2026-11-03 KST. Recorded reading: 2026-11-03 KST. Reader: Earlier reader; inherited note.
+Snapshot SHA-256: ba79bcd292ef3bc1ab52f3299a270044f00cabc9309910a3326c6b046ae3a6b7
+Input words: 844. Candidate rule records: 19. Exclusion blocks: 7.
+Original note: p069-panels/panels.md.
+Adopted source-linked rules: C-37
+
+Candidate MUST wording may overstate source advice or include native assumptions. The curated rules and standards-and-scope.md take precedence after approval. Coverage counts describe extraction records, not conformance or independently verified defects. The original note is preserved below without silently rewriting historical evidence.
+
+---
+
+## Panels
+URL: https://developer.apple.com/design/human-interface-guidelines/panels
+Universal rules:
+- MUST give each panel a short noun or noun-phrase title that tells people what it is for. | topic: Panels | source: https://developer.apple.com/design/human-interface-guidelines/panels | why: people can recognize the panel on screen and find it again | check: at 1440px the panel header shows a 1-3 word noun phrase; at 390px no floating panel appears, and the content sits in a modal view or is absent
+- MUST keep a panel's appearance less prominent than the main content window. | topic: Panels | source: https://developer.apple.com/design/human-interface-guidelines/panels | why: the main work stays the focus while the supporting controls stay available | check: at 1440px the panel's contrast and weight are lower than the main window's in the same screenshot; at 390px not applicable because no floating panel is shown
+- MUST show in a panel only controls or information that act on the current selection or active content. | topic: Panels | source: https://developer.apple.com/design/human-interface-guidelines/panels | why: people see the settings for the item they are working on without hunting for them | check: at 1440px select two different items and capture the panel each time; the controls and values change with the selection; at 390px the same content is a modal view tied to the current selection
+- MUST make an inspector panel update its contents automatically when the selected item changes. | topic: Panels | source: https://developer.apple.com/design/human-interface-guidelines/panels | why: people never see details for an item they have already left | check: at 1440px change the selection with the panel open and capture; the panel shows the new item's values without being reopened; at 390px not screenshot-checkable: a floating inspector does not exist at phone width
+- MUST NOT use a panel for information that stays the same when the selection changes; use a regular window for it. | topic: Panels | source: https://developer.apple.com/design/human-interface-guidelines/panels | why: a fixed info window does not jump or reset when people click something else | check: at 1440px change the selection and capture; the window content is identical in both captures and it is a regular window, not a panel; at 390px not screenshot-checkable: no floating panel exists at phone width
+- MUST NOT put controls that need typed text or multi-step item selection in a panel; use sliders or steppers for adjustments. | topic: Panels | source: https://developer.apple.com/design/human-interface-guidelines/panels | why: direct controls let people adjust a value in one action instead of several | check: at 1440px the panel contains no text input field and no multi-step picker, only sliders, steppers or similar direct controls; at 390px the same panel content contains no text input field
+- MUST bring all open panels to the front when the app becomes active, whichever window was focused when each panel opened. | topic: Panels | source: https://developer.apple.com/design/human-interface-guidelines/panels | why: people do not lose their panels behind other windows when they return to the app | check: not screenshot-checkable: needs switching focus to another app and back, then checking window stacking order
+- MUST hide all panels when the app becomes inactive. | topic: Panels | source: https://developer.apple.com/design/human-interface-guidelines/panels | why: panels that appear only while the app is in use do not clutter the screen | check: not screenshot-checkable: needs deactivating the app and confirming no panel remains visible
+- MUST NOT include the word panel in menu command titles; use the panel's bare title, such as Show Fonts or Show Inspector. | topic: Panels | source: https://developer.apple.com/design/human-interface-guidelines/panels | why: menu commands match the names people already see on the panels | check: at 1440px the menu item text matches the panel title with no panel word; at 390px not screenshot-checkable: no menu bar exists at phone width
+- MUST NOT introduce panel as a separate type of window in help text; refer to a panel by its title, adding the word window only when it adds clarity. | topic: Panels | source: https://developer.apple.com/design/human-interface-guidelines/panels | why: readers do not learn a new window category they must keep track of | check: not screenshot-checkable: a reviewer reads the help copy and confirms the title is used, with no panel-type explanation
+- MUST prefer a standard panel over a dark translucent overlay. | topic: Panels | source: https://developer.apple.com/design/human-interface-guidelines/panels | why: people are not distracted or confused by an overlay that has no clear reason to be there | check: at 1440px the default panel shows a standard light surface in the screenshot; at 390px no dark translucent overlay appears
+- MUST use a dark translucent overlay only in a media-oriented app that presents movies, photos or slides. | topic: Panels | source: https://developer.apple.com/design/human-interface-guidelines/panels | why: the dark surface suits viewing media and does not compete with it | check: not screenshot-checkable: depends on the app's category, which the product brief decides
+- MUST use a dark translucent overlay only when a standard panel would obscure essential content. | topic: Panels | source: https://developer.apple.com/design/human-interface-guidelines/panels | why: people keep seeing the content they came for while the controls stay available | check: at 1440px capture the standard panel open over the content and confirm essential content is hidden before choosing the overlay; at 390px the same test with the overlay confirms the content stays visible
+- MUST NOT put standard controls inside a dark translucent overlay, because most of them do not match its appearance. | topic: Panels | source: https://developer.apple.com/design/human-interface-guidelines/panels | why: controls stay readable and look consistent with the rest of the interface | check: at 1440px the dark overlay screenshot shows no standard control widgets, only content and non-control elements; at 390px the same check
+- MUST keep the same panel style when the app switches display modes, such as leaving full-screen mode. | topic: Panels | source: https://developer.apple.com/design/human-interface-guidelines/panels | why: people see one consistent tool and do not relearn it after a mode change | check: at 1440px capture the panel in windowed and full-screen modes; the style matches in both captures; at 390px not applicable because the mode switch is not shown
+- MUST use color sparingly in a dark overlay, limited to small amounts of high-contrast color that highlight important information. | topic: Panels | source: https://developer.apple.com/design/human-interface-guidelines/panels | why: people find the key value fast without a visually noisy surface | check: at 1440px the dark overlay screenshot has one or two small high-contrast accents and no large colored areas; at 390px the same check
+- MUST keep a dark translucent overlay small. | topic: Panels | source: https://developer.apple.com/design/human-interface-guidelines/panels | why: an unobtrusive overlay stays useful and does not take over the screen | check: at 1440px the overlay occupies a small part of the window in the screenshot and the reviewer confirms it does not dominate the view; the HIG gives no numeric size, so this is a reviewer judgement; at 390px the same check
+- MUST NOT let a dark translucent overlay cover the content it adjusts. | topic: Panels | source: https://developer.apple.com/design/human-interface-guidelines/panels | why: people can see the effect of their adjustment while they make it | check: at 1440px the screenshot with the overlay open shows the adjusted content fully visible; at 390px the same check
+- MUST NOT let a dark translucent overlay compete with the content for people's attention. | topic: Panels | source: https://developer.apple.com/design/human-interface-guidelines/panels | why: people keep their focus on the content instead of the overlay | check: at 1440px the screenshot with the overlay open shows the content, not the overlay, as the visual focus; at 390px the same check
+Apple-specific (excluded):
+- Panels floating above other windows and the macOS window-state model, which are macOS windowing behavior.
+- The dark translucent HUD style and the NSPanel and hudWindow developer APIs, which are AppKit.
+- The minimize button on a panel's title bar, which is macOS window chrome.
+- Keeping panels out of the Window menu's documents list, which is the macOS menu bar.
+- Panels not being supported on iOS, iPadOS, tvOS, visionOS or watchOS, which is an Apple platform list.
+- The disclosure-triangle exception and system-provided controls not matching the HUD look, which are Apple's own components.
+- The built-in macOS Fonts and Colors panel names used as examples, which are Apple's own panels.
+Persona and journey notes:
+- The person works on a selected item in a document or window and wants its settings within reach, so an inspector that follows the selection fits their goal.
+- The person may view media, photos or slides in an immersive or full-screen view, the one case where a dark overlay is justified.
+- People can be distracted or confused by a dark overlay that has no logical reason for being there.
+- People position a panel where they want it, and they rarely need to minimize it because it appears only when needed.
+COVERAGE:
+- panels: read, about 800 words, 19 universal rules, 7 excluded

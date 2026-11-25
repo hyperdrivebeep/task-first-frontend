@@ -1,0 +1,181 @@
+Candidate catalog - evidence only.
+
+# HIG extraction catalog
+
+The canonical set is the 173 page files under pages/. [Coverage](../coverage.md) supplies the complete reading ledger, counts and direct adopted-rule IDs. [Standards and scope](../standards-and-scope.md) explains why these raw candidates are not normative.
+
+The 18 earlier batch files in this directory are retained as legacy working evidence. They are incomplete as a set and can contain superseded assumptions. Use pages/ for full coverage and the curated rules-*.md files for the proposed contract. No catalog file authorizes installation or certifies an implementation.
+
+- [Human Interface Guidelines](pages/ROOT.md) - 0 candidate rule records, 0 exclusion blocks.
+- [Color](pages/color.md) - 33 candidate rule records, 7 exclusion blocks.
+- [Accessibility](pages/accessibility.md) - 61 candidate rule records, 7 exclusion blocks.
+- [App icons](pages/app-icons.md) - 22 candidate rule records, 7 exclusion blocks.
+- [Components](pages/components.md) - 0 candidate rule records, 1 exclusion blocks.
+- [Design principles](pages/design-principles.md) - 39 candidate rule records, 1 exclusion blocks.
+- [Designing for iPhone Duo](pages/designing-for-iphone-duo.md) - 29 candidate rule records, 18 exclusion blocks.
+- [Gestures](pages/gestures.md) - 35 candidate rule records, 10 exclusion blocks.
+- [Layout](pages/layout.md) - 56 candidate rule records, 3 exclusion blocks.
+- [Inputs](pages/inputs.md) - 0 candidate rule records, 0 exclusion blocks.
+- [Foundations](pages/foundations.md) - 0 candidate rule records, 0 exclusion blocks.
+- [Designing for macOS](pages/designing-for-macos.md) - 20 candidate rule records, 4 exclusion blocks.
+- [Getting started](pages/getting-started.md) - 0 candidate rule records, 0 exclusion blocks.
+- [Materials](pages/materials.md) - 54 candidate rule records, 3 exclusion blocks.
+- [Pointing devices](pages/pointing-devices.md) - 21 candidate rule records, 4 exclusion blocks.
+- [Typography](pages/typography.md) - 31 candidate rule records, 17 exclusion blocks.
+- [Patterns](pages/patterns.md) - 0 candidate rule records, 1 exclusion blocks.
+- [Widgets](pages/widgets.md) - 31 candidate rule records, 6 exclusion blocks.
+- [Technologies](pages/technologies.md) - 0 candidate rule records, 0 exclusion blocks.
+- [Dark Mode](pages/dark-mode.md) - 18 candidate rule records, 3 exclusion blocks.
+- [Complications](pages/complications.md) - 25 candidate rule records, 10 exclusion blocks.
+- [Playing haptics](pages/playing-haptics.md) - 28 candidate rule records, 6 exclusion blocks.
+- [Keyboards](pages/keyboards.md) - 14 candidate rule records, 9 exclusion blocks.
+- [Sidebars](pages/sidebars.md) - 18 candidate rule records, 8 exclusion blocks.
+- [Siri](pages/siri.md) - 13 candidate rule records, 3 exclusion blocks.
+- [Inclusion](pages/inclusion.md) - 49 candidate rule records, 4 exclusion blocks.
+- [Content](pages/content.md) - 0 candidate rule records, 1 exclusion blocks.
+- [Layout and organization](pages/layout-and-organization.md) - 0 candidate rule records, 0 exclusion blocks.
+- [VoiceOver](pages/voiceover.md) - 15 candidate rule records, 6 exclusion blocks.
+- [Icons](pages/icons.md) - 28 candidate rule records, 3 exclusion blocks.
+- [Images](pages/images.md) - 12 candidate rule records, 4 exclusion blocks.
+- [System experiences](pages/system-experiences.md) - 0 candidate rule records, 0 exclusion blocks.
+- [Status](pages/status.md) - 0 candidate rule records, 0 exclusion blocks.
+- [Menus and actions](pages/menus-and-actions.md) - 0 candidate rule records, 0 exclusion blocks.
+- [Navigation and search](pages/navigation-and-search.md) - 0 candidate rule records, 0 exclusion blocks.
+- [Selection and input](pages/selection-and-input.md) - 0 candidate rule records, 0 exclusion blocks.
+- [Presentation](pages/presentation.md) - 0 candidate rule records, 0 exclusion blocks.
+- [Designing for games](pages/designing-for-games.md) - 30 candidate rule records, 1 exclusion blocks.
+- [Designing for iOS](pages/designing-for-ios.md) - 11 candidate rule records, 5 exclusion blocks.
+- [Eyes](pages/eyes.md) - 13 candidate rule records, 3 exclusion blocks.
+- [Toolbars](pages/toolbars.md) - 42 candidate rule records, 14 exclusion blocks.
+- [Game controls](pages/game-controls.md) - 15 candidate rule records, 3 exclusion blocks.
+- [Feedback](pages/feedback.md) - 12 candidate rule records, 2 exclusion blocks.
+- [Split views](pages/split-views.md) - 12 candidate rule records, 12 exclusion blocks.
+- [Apple Pencil and Scribble](pages/apple-pencil-and-scribble.md) - 18 candidate rule records, 4 exclusion blocks.
+- [Notifications](pages/notifications.md) - 20 candidate rule records, 4 exclusion blocks.
+- [Remotes](pages/remotes.md) - 8 candidate rule records, 3 exclusion blocks.
+- [Ornaments](pages/ornaments.md) - 4 candidate rule records, 2 exclusion blocks.
+- [Multitasking](pages/multitasking.md) - 14 candidate rule records, 8 exclusion blocks.
+- [Buttons](pages/buttons.md) - 48 candidate rule records, 23 exclusion blocks.
+- [Right to left](pages/right-to-left.md) - 27 candidate rule records, 5 exclusion blocks.
+- [Spatial layout](pages/spatial-layout.md) - 23 candidate rule records, 9 exclusion blocks.
+- [Tab bars](pages/tab-bars.md) - 22 candidate rule records, 1 exclusion blocks.
+- [Windows](pages/windows.md) - 14 candidate rule records, 1 exclusion blocks.
+- [Scroll views](pages/scroll-views.md) - 27 candidate rule records, 21 exclusion blocks.
+- [Action button](pages/action-button.md) - 6 candidate rule records, 15 exclusion blocks.
+- [Nearby interactions](pages/nearby-interactions.md) - 7 candidate rule records, 3 exclusion blocks.
+- [Digital Crown](pages/digital-crown.md) - 4 candidate rule records, 3 exclusion blocks.
+- [Camera Control](pages/camera-control.md) - 6 candidate rule records, 3 exclusion blocks.
+- [Gyroscope and accelerometer](pages/gyro-and-accelerometer.md) - 3 candidate rule records, 1 exclusion blocks.
+- [Focus and selection](pages/focus-and-selection.md) - 10 candidate rule records, 3 exclusion blocks.
+- [Immersive experiences](pages/immersive-experiences.md) - 18 candidate rule records, 3 exclusion blocks.
+- [Motion](pages/motion.md) - 20 candidate rule records, 9 exclusion blocks.
+- [Privacy](pages/privacy.md) - 40 candidate rule records, 10 exclusion blocks.
+- [SF Symbols](pages/sf-symbols.md) - 33 candidate rule records, 7 exclusion blocks.
+- [Branding](pages/branding.md) - 11 candidate rule records, 3 exclusion blocks.
+- [Writing](pages/writing.md) - 54 candidate rule records, 6 exclusion blocks.
+- [Dock menus](pages/dock-menus.md) - 4 candidate rule records, 5 exclusion blocks.
+- [File management](pages/file-management.md) - 31 candidate rule records, 6 exclusion blocks.
+- [Going full screen](pages/going-full-screen.md) - 19 candidate rule records, 9 exclusion blocks.
+- [Designing for iPadOS](pages/designing-for-ipados.md) - 11 candidate rule records, 5 exclusion blocks.
+- [The menu bar](pages/the-menu-bar.md) - 59 candidate rule records, 11 exclusion blocks.
+- [Designing for visionOS](pages/designing-for-visionos.md) - 6 candidate rule records, 7 exclusion blocks.
+- [Designing for tvOS](pages/designing-for-tvos.md) - 3 candidate rule records, 3 exclusion blocks.
+- [Designing for watchOS](pages/designing-for-watchos.md) - 9 candidate rule records, 9 exclusion blocks.
+- [Sliders](pages/sliders.md) - 8 candidate rule records, 3 exclusion blocks.
+- [Toggles](pages/toggles.md) - 10 candidate rule records, 3 exclusion blocks.
+- [Context menus](pages/context-menus.md) - 24 candidate rule records, 10 exclusion blocks.
+- [Entering data](pages/entering-data.md) - 15 candidate rule records, 9 exclusion blocks.
+- [Charting data](pages/charting-data.md) - 19 candidate rule records, 5 exclusion blocks.
+- [Live-viewing apps](pages/live-viewing-apps.md) - 30 candidate rule records, 2 exclusion blocks.
+- [Collaboration and sharing](pages/collaboration-and-sharing.md) - 14 candidate rule records, 14 exclusion blocks.
+- [Managing accounts](pages/managing-accounts.md) - 26 candidate rule records, 8 exclusion blocks.
+- [Loading](pages/loading.md) - 12 candidate rule records, 3 exclusion blocks.
+- [Drag and drop](pages/drag-and-drop.md) - 34 candidate rule records, 22 exclusion blocks.
+- [Launching](pages/launching.md) - 14 candidate rule records, 8 exclusion blocks.
+- [Playing video](pages/playing-video.md) - 39 candidate rule records, 7 exclusion blocks.
+- [Playing audio](pages/playing-audio.md) - 17 candidate rule records, 7 exclusion blocks.
+- [Onboarding](pages/onboarding.md) - 18 candidate rule records, 2 exclusion blocks.
+- [Modality](pages/modality.md) - 17 candidate rule records, 6 exclusion blocks.
+- [Offering help](pages/offering-help.md) - 36 candidate rule records, 5 exclusion blocks.
+- [Managing notifications](pages/managing-notifications.md) - 14 candidate rule records, 13 exclusion blocks.
+- [Printing](pages/printing.md) - 11 candidate rule records, 10 exclusion blocks.
+- [Workouts](pages/workouts.md) - 13 candidate rule records, 4 exclusion blocks.
+- [Ratings and reviews](pages/ratings-and-reviews.md) - 10 candidate rule records, 6 exclusion blocks.
+- [Undo and redo](pages/undo-and-redo.md) - 8 candidate rule records, 9 exclusion blocks.
+- [Searching](pages/searching.md) - 9 candidate rule records, 5 exclusion blocks.
+- [Settings](pages/settings.md) - 18 candidate rule records, 9 exclusion blocks.
+- [Live Activities](pages/live-activities.md) - 26 candidate rule records, 6 exclusion blocks.
+- [AirPlay](pages/airplay.md) - 9 candidate rule records, 3 exclusion blocks.
+- [Always On](pages/always-on.md) - 6 candidate rule records, 1 exclusion blocks.
+- [CareKit](pages/carekit.md) - 20 candidate rule records, 4 exclusion blocks.
+- [Apple In-App Purchase](pages/apple-in-app-purchase.md) - 51 candidate rule records, 13 exclusion blocks.
+- [Augmented reality](pages/augmented-reality.md) - 27 candidate rule records, 4 exclusion blocks.
+- [CarPlay](pages/carplay.md) - 11 candidate rule records, 3 exclusion blocks.
+- [App Clips](pages/app-clips.md) - 30 candidate rule records, 6 exclusion blocks.
+- [Apple Pay](pages/apple-pay.md) - 48 candidate rule records, 18 exclusion blocks.
+- [Generative AI](pages/generative-ai.md) - 87 candidate rule records, 5 exclusion blocks.
+- [iCloud](pages/icloud.md) - 9 candidate rule records, 2 exclusion blocks.
+- [HealthKit](pages/healthkit.md) - 9 candidate rule records, 4 exclusion blocks.
+- [HomeKit](pages/homekit.md) - 18 candidate rule records, 4 exclusion blocks.
+- [Game Center](pages/game-center.md) - 16 candidate rule records, 4 exclusion blocks.
+- [ID Verifier](pages/id-verifier.md) - 4 candidate rule records, 3 exclusion blocks.
+- [Maps](pages/maps.md) - 18 candidate rule records, 3 exclusion blocks.
+- [Live Photos](pages/live-photos.md) - 5 candidate rule records, 2 exclusion blocks.
+- [iMessage apps and stickers](pages/imessage-apps-and-stickers.md) - 5 candidate rule records, 3 exclusion blocks.
+- [Mac Catalyst](pages/mac-catalyst.md) - 9 candidate rule records, 3 exclusion blocks.
+- [NFC](pages/nfc.md) - 4 candidate rule records, 2 exclusion blocks.
+- [Machine learning](pages/machine-learning.md) - 106 candidate rule records, 1 exclusion blocks.
+- [SharePlay](pages/shareplay.md) - 19 candidate rule records, 4 exclusion blocks.
+- [Sign in with Apple](pages/sign-in-with-apple.md) - 13 candidate rule records, 4 exclusion blocks.
+- [Tap to Pay on iPhone](pages/tap-to-pay-on-iphone.md) - 15 candidate rule records, 4 exclusion blocks.
+- [ResearchKit](pages/researchkit.md) - 14 candidate rule records, 3 exclusion blocks.
+- [Photo editing](pages/photo-editing.md) - 4 candidate rule records, 2 exclusion blocks.
+- [ShazamKit](pages/shazamkit.md) - 3 candidate rule records, 2 exclusion blocks.
+- [Watch faces](pages/watch-faces.md) - 3 candidate rule records, 2 exclusion blocks.
+- [Wallet](pages/wallet.md) - 31 candidate rule records, 5 exclusion blocks.
+- [Virtual keyboards](pages/virtual-keyboards.md) - 8 candidate rule records, 3 exclusion blocks.
+- [Disclosure controls](pages/disclosure-controls.md) - 7 candidate rule records, 1 exclusion blocks.
+- [Snippets](pages/snippets.md) - 5 candidate rule records, 2 exclusion blocks.
+- [App Shortcuts](pages/app-shortcuts.md) - 19 candidate rule records, 7 exclusion blocks.
+- [Text views](pages/text-views.md) - 12 candidate rule records, 5 exclusion blocks.
+- [Image views](pages/image-views.md) - 13 candidate rule records, 7 exclusion blocks.
+- [Charts](pages/charts.md) - 34 candidate rule records, 7 exclusion blocks.
+- [Lists and tables](pages/lists-and-tables.md) - 18 candidate rule records, 5 exclusion blocks.
+- [Web views](pages/web-views.md) - 4 candidate rule records, 5 exclusion blocks.
+- [Column views](pages/column-views.md) - 11 candidate rule records, 5 exclusion blocks.
+- [Collections](pages/collections.md) - 9 candidate rule records, 3 exclusion blocks.
+- [Labels](pages/labels.md) - 13 candidate rule records, 5 exclusion blocks.
+- [Boxes](pages/boxes.md) - 7 candidate rule records, 4 exclusion blocks.
+- [Lockups](pages/lockups.md) - 5 candidate rule records, 8 exclusion blocks.
+- [Outline views](pages/outline-views.md) - 24 candidate rule records, 5 exclusion blocks.
+- [Tab views](pages/tab-views.md) - 10 candidate rule records, 4 exclusion blocks.
+- [Menus](pages/menus.md) - 29 candidate rule records, 8 exclusion blocks.
+- [Controls](pages/controls.md) - 22 candidate rule records, 8 exclusion blocks.
+- [Status bars](pages/status-bars.md) - 3 candidate rule records, 1 exclusion blocks.
+- [Activity rings](pages/activity-rings.md) - 5 candidate rule records, 3 exclusion blocks.
+- [Top Shelf](pages/top-shelf.md) - 8 candidate rule records, 3 exclusion blocks.
+- [Progress indicators](pages/progress-indicators.md) - 13 candidate rule records, 2 exclusion blocks.
+- [Gauges](pages/gauges.md) - 3 candidate rule records, 3 exclusion blocks.
+- [Edit menus](pages/edit-menus.md) - 10 candidate rule records, 6 exclusion blocks.
+- [Home Screen quick actions](pages/home-screen-quick-actions.md) - 12 candidate rule records, 7 exclusion blocks.
+- [Rating indicators](pages/rating-indicators.md) - 2 candidate rule records, 1 exclusion blocks.
+- [Activity views](pages/activity-views.md) - 10 candidate rule records, 7 exclusion blocks.
+- [Pop-up buttons](pages/pop-up-buttons.md) - 13 candidate rule records, 3 exclusion blocks.
+- [Token fields](pages/token-fields.md) - 3 candidate rule records, 4 exclusion blocks.
+- [Pull-down buttons](pages/pull-down-buttons.md) - 14 candidate rule records, 6 exclusion blocks.
+- [Path controls](pages/path-controls.md) - 14 candidate rule records, 5 exclusion blocks.
+- [Search fields](pages/search-fields.md) - 25 candidate rule records, 6 exclusion blocks.
+- [Color wells](pages/color-wells.md) - 4 candidate rule records, 4 exclusion blocks.
+- [Steppers](pages/steppers.md) - 2 candidate rule records, 2 exclusion blocks.
+- [Pickers](pages/pickers.md) - 6 candidate rule records, 3 exclusion blocks.
+- [Segmented controls](pages/segmented-controls.md) - 10 candidate rule records, 3 exclusion blocks.
+- [Image wells](pages/image-wells.md) - 2 candidate rule records, 1 exclusion blocks.
+- [Combo boxes](pages/combo-boxes.md) - 4 candidate rule records, 2 exclusion blocks.
+- [Digit entry views](pages/digit-entry-views.md) - 2 candidate rule records, 1 exclusion blocks.
+- [Action sheets](pages/action-sheets.md) - 16 candidate rule records, 6 exclusion blocks.
+- [Text fields](pages/text-fields.md) - 14 candidate rule records, 2 exclusion blocks.
+- [Page controls](pages/page-controls.md) - 18 candidate rule records, 8 exclusion blocks.
+- [Popovers](pages/popovers.md) - 22 candidate rule records, 8 exclusion blocks.
+- [Panels](pages/panels.md) - 19 candidate rule records, 7 exclusion blocks.
+- [Alerts](pages/alerts.md) - 42 candidate rule records, 14 exclusion blocks.
+- [Sheets](pages/sheets.md) - 27 candidate rule records, 10 exclusion blocks.
