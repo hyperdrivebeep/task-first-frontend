@@ -7,6 +7,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { isFile, sha256, parseTables, findTable, clean, isEmpty, imageDims, findImage, parseGateBlock, kvList, parseCrop, cropFits, cropKey, boardAltImage } from './lib.mjs';
+import { loadGuardrails, readScope, isApplicable, checkDecisions, column, proofExists } from './guardrails.mjs';
 
 const SKILL_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -419,7 +420,7 @@ function selectorKeys(sel) {
 // ---------- stage-specific required reading (paths relative to the skill root) ----------
 const REQUIRED_READING = {
   0: ['SKILL.md', 'references/work-folder.md', 'references/reading-and-delegation.md'],
-  1: ['references/discovery-and-tasks.md', 'references/guardrails/SKILL.source.md', 'references/guardrails/references/method.md'],
+  1: ['references/discovery-and-tasks.md', 'references/guardrails/SKILL.source.md', 'references/guardrails/references/method.md', 'references/verification/references/state-design.md'],
   2: ['references/audit-and-research.md'],
   3: ['references/guides/01-good-ui-ux-reference-guide.md', 'references/guides/02-no-ai-slop-mobile-web-ui-ux.md'],
   4: ['references/design-and-ideation.md', 'references/anti-slop.md'],
@@ -453,14 +454,28 @@ function s0() {
   if (t.rows.length === 0) fail('reading-ledger.md table has no rows');
   else if (bad === 0) pass(`reading ledger: ${ok} row(s) recounted, every file read to its last line`);
 }
+const CLIENT_REVIEW_DOC = 'references/verification/references/client-runtime-review.md';
 function requireReading(n) {
-  const missing = REQUIRED_READING[n].filter((r) => !ledgerPaths.has(normPath(path.join(SKILL_ROOT, r))));
+  if (n === 6 && contract?.scope === 'design-only') return;
+  const required = new Set(REQUIRED_READING[n]);
+  if (n === 1) {
+    for (const [id, rule] of guardrailRules) {
+      if (/^[FP]-/.test(id) || ['design', 'runtime', 'exception', 'unknown'].includes(ruleScope.get(id))) required.add(rule.doc);
+    }
+  }
+  if (n === 5) for (const doc of verificationReading) required.add(doc);
+  if (n === 5 && ['existing', 'changes'].includes(contract?.kv.client_review)) required.add(CLIENT_REVIEW_DOC);
+  const missing = [...required].filter((r) => !ledgerPaths.has(normPath(path.join(SKILL_ROOT, r))));
   if (missing.length) fail(`required reading for S${n} not in ledger as fully read: ${missing.join(', ')} (paths under ${SKILL_ROOT.replace(/\\/g, '/')})`);
-  else if (REQUIRED_READING[n].length) pass(`required reading for S${n} recorded (${REQUIRED_READING[n].length} file(s))`);
+  else if (required.size) pass(`required reading for S${n} recorded (${required.size} file(s))`);
 }
 
 // ---------- S1 ----------
 let contract = null;
+let guardrailRules = new Map();
+let ruleScope = new Map();
+const verificationReading = new Set();
+const afterProofs = new Map();
 const SCOPES = ['design-only', 'implement', 'small-fix'];
 function siteList() {
   const p = path.join(SKILL_ROOT, 'references', 'site-list.json');
@@ -483,6 +498,9 @@ function s1() {
   if (!['yes', 'no'].includes(c.existing)) bad('existing_ui must be yes or no');
   if (c.existing === 'no' && isEmpty(kv.existing_ui_reason)) bad('existing_ui: no requires existing_ui_reason');
   if (!SCOPES.includes(c.scope)) bad(`scope must be one of ${SCOPES.join(', ')}`);
+  if (!['existing', 'changes', 'none'].includes(kv.client_review)) bad('set client_review in 00-contract.md: existing, changes, or none');
+  if (isEmpty(kv.client_review_reason)) bad('set client_review_reason in 00-contract.md to explain the review scope');
+  if (c.scope === 'design-only' && kv.client_review === 'changes') bad('design-only cannot verify implementation changes at S6; choose existing or none');
   if (!Number.isInteger(c.alternatives) || c.alternatives < 1) bad('alternatives must be a positive integer');
   else if (c.alternatives < 3 && isEmpty(kv.alternatives_reason)) bad(`alternatives ${c.alternatives} < 3 requires alternatives_reason (user-specified count)`);
   if (!['html', 'imagegen'].includes(c.altSource)) bad('alt_source must be html or imagegen');
@@ -506,6 +524,8 @@ function s1() {
   if (/\{\{[^}]*\}\}/.test(md)) bad('00-contract.md still contains {{template}} placeholders');
   if (ok) pass(`contract: widths ${c.widths.join(',')}, screens ${c.screens.join(',')}, tasks ${c.tasks.join(',')}, scope ${c.scope}`);
   contract = c;
+  guardrailRules = loadGuardrails(SKILL_ROOT);
+  ruleScope = readScope(md, kv.guardrail_topics, guardrailRules, fail);
 }
 function needContract(what) { if (!contract) { fail(`${what}: cannot check without a valid 00-contract.md`); return false; } return true; }
 
@@ -620,11 +640,12 @@ function composedManifest(img, kind) {
   return m;
 }
 const AS_IDS = ['AS-1', 'AS-2', 'AS-3', 'AS-4', 'AS-5'];
+const alternativeIds = new Set();
 function s4() {
   if (!needContract('alternatives')) return;
   if (contract.scope === 'small-fix') { na('alternatives: scope small-fix (selected design is kept)'); return; }
   const dir = W('03-alts');
-  const ids = new Set(); const boardImg = new Map();
+  const ids = alternativeIds; const boardImg = new Map();
   for (const n of listDir(dir)) { const m = n.match(/^alt-([a-z0-9]+)-(\d+)\.(png|webp)$/i); if (m) ids.add(m[1].toLowerCase()); }
   if (ids.size < contract.alternatives) fail(`03-alts: ${ids.size} alternative(s) (${[...ids].join(',') || 'none'}); need >= ${contract.alternatives}`);
   else pass(`03-alts: ${ids.size} alternative(s): ${[...ids].join(', ')}`);
@@ -642,6 +663,7 @@ function s4() {
   if (md === null) fail('03-alts/boards/board.md missing');
   else {
     const tables = parseTables(md);
+    checkDecisions(tables, ids, ruleScope, fail);
     const t = findTable(tables, ['alt', 'element', 'ref_file', 'ref_crop', 'alt_crop', '가져온 것', '바꾼 것']);
     if (!t) fail('board.md: provenance table (alt|element|ref_file|ref_crop|alt_crop|가져온 것|바꾼 것) missing');
     else {
@@ -717,24 +739,60 @@ function s4() {
 
 // ---------- S5 ----------
 function knownRuleIds() {
-  const ids = new Set();
-  const dir = path.join(SKILL_ROOT, 'references', 'guardrails', 'references');
-  for (const n of listDir(dir).filter((n) => /^rules-.*\.md$/.test(n))) for (const m of (readText(path.join(dir, n)) || '').matchAll(/^- \[([FPCIT]-\d{2})\]/gm)) ids.add(m[1]);
-  for (const m of (readText(path.join(SKILL_ROOT, 'references', 'verification', 'references', 'client-runtime-review.md')) || '').matchAll(/^#### (UI-\d{2})/gm)) ids.add(m[1]);
+  const ids = new Set(guardrailRules.keys());
+  for (const m of (readText(path.join(SKILL_ROOT, CLIENT_REVIEW_DOC)) || '').matchAll(/^#### (UI-\d{2})/gm)) ids.add(m[1]);
   return ids;
 }
 const VERDICTS = ['PASS', 'FAIL', 'UNVERIFIED', 'N/A'];
+const pendingImplementationReview = new Set();
 function s5() {
   if (!needContract('verdicts')) return;
+  if (contract.scope === 'implement' && !alternativeIds.has(contract.kv.selected_alt)) {
+    fail('record the selected alternative id in selected_alt before implementation review');
+  }
   const md = readText(W('04-verdicts.md'));
   if (md === null) { fail('04-verdicts.md missing'); return; }
   const t = findTable(parseTables(md), ['rule_id', 'applies', 'evidence', 'verdict']);
   if (!t) { fail('04-verdicts.md: table rule_id|applies|evidence|verdict missing'); return; }
   const known = knownRuleIds(); const seen = new Map(); const blockers = []; const unverified = []; let ok = true;
+  const review = contract.kv.client_review;
+  const reviewRequired = review === 'existing' || review === 'changes';
+  const expectedColumn = t.headers.indexOf('expected');
   for (const row of t.rows) {
     const idsCell = t.get(row, 'rule_id'), applies = t.get(row, 'applies').toLowerCase(), ev = t.get(row, 'evidence'), verdict = t.get(row, 'verdict').toUpperCase();
     const label = `04-verdicts.md line ${row.line} ${idsCell}`;
     const ids = idsCell.split(/[,\s]+/).filter(Boolean);
+    const active = ids.filter(id => isApplicable(ruleScope.get(id)));
+    for (const id of ids.filter(id => guardrailRules.has(id))) {
+      const decision = ruleScope.get(id);
+      if (seen.has(id)) { fail(`${label}: duplicate verdict for ${id}`); ok = false; }
+      if (decision === 'unknown') {
+        if (applies !== 'required' || verdict !== 'UNVERIFIED') { fail(`${label}: unresolved scope requires required/UNVERIFIED`); ok = false; }
+      } else if (isApplicable(decision) ? applies !== 'required' || verdict === 'N/A' : applies !== 'no' || verdict !== 'N/A') {
+        fail(`${label}: verdict disagrees with S1 applicability for ${id}`); ok = false;
+      }
+    }
+    if (active.length) {
+      const method = column(t, row, 'method');
+      const doc = 'references/verification/references/' + method;
+      if (!/^[a-z-]+\.md$/.test(method) || method === 'sources.md' || !isFile(path.join(SKILL_ROOT, doc))) {
+        fail(`${label}: select a verification method document from the bundled ui-verification references`); ok = false;
+      } else verificationReading.add(doc);
+      if (isEmpty(column(t, row, 'expected'))) { fail(`${label}: missing expected behavior`); ok = false; }
+      const proof = column(t, row, 'proof');
+      if (verdict === 'PASS' && !proofExists(work, work, proof)) { fail(`${label}: PASS requires a proof file in the work folder`); ok = false; }
+      for (const id of active) afterProofs.set(id, { verdict, proof });
+    }
+    const uiIds = ids.filter((id) => known.has(id) && id.startsWith('UI-'));
+    const reviewedRow = reviewRequired && uiIds.length > 0;
+    if (reviewedRow) {
+      if (applies === 'optional' || (verdict === 'N/A' && applies !== 'no')) {
+        fail(`${label}: use required for applicable UI rules and no with a reason for N/A`); ok = false;
+      }
+      if (review === 'changes' && applies === 'required' && isEmpty(clean(row.cells[expectedColumn]))) {
+        fail(`${label}: record the expected behavior in the expected column before implementation`); ok = false;
+      }
+    }
     const unknown = ids.filter((i) => !known.has(i));
     if (unknown.length) warn(`${label}: unknown rule id(s) ${unknown.join(', ')}`);
     if (!['required', 'optional', 'no'].includes(applies)) { fail(`${label}: applies must be required, optional or no`); ok = false; }
@@ -748,23 +806,44 @@ function s5() {
     }
     for (const id of ids) { const prev = seen.get(id); if (prev && prev !== verdict) { fail(`${label}: ${id} has conflicting verdicts ${prev} and ${verdict}`); ok = false; } seen.set(id, verdict); }
     if (applies === 'required' && verdict === 'FAIL') blockers.push(idsCell);
-    if (applies === 'required' && verdict === 'UNVERIFIED') unverified.push(idsCell);
+    if (applies === 'required' && verdict === 'UNVERIFIED') {
+      if (review === 'changes' && uiIds.length > 0 && uiIds.length === ids.length) {
+        for (const id of uiIds) pendingImplementationReview.add(id);
+      } else if (ids.length > 0 && ids.every(id => ruleScope.get(id) === 'runtime')) {
+        info(`${label}: runtime verification planned for S6`);
+      } else if (reviewedRow && review === 'existing') {
+        blockers.push(idsCell + ' (UNVERIFIED)');
+      } else {
+        unverified.push(idsCell);
+      }
+    }
   }
   const missing = [...known].filter((i) => /^[FP]-/.test(i) && !seen.has(i));
   if (missing.length) { fail(`04-verdicts.md: ${missing.length} foundation/pattern rule(s) without a row (grouped rows allowed): ${missing.slice(0, 20).join(', ')}${missing.length > 20 ? ' ...' : ''}`); ok = false; }
+  const unaccounted = [...ruleScope].filter(([id, value]) => (isApplicable(value) || value === 'unknown') && !seen.has(id));
+  if (unaccounted.length) { fail(`04-verdicts.md: missing scoped rules: ${unaccounted.map(([id]) => id).join(', ')}`); ok = false; }
+  if (reviewRequired) {
+    const missingUi = [...known].filter((id) => id.startsWith('UI-') && !seen.has(id));
+    if (missingUi.length) { fail(`04-verdicts.md: missing client review rows: ${missingUi.join(', ')}`); ok = false; }
+  }
   if (ok) pass(`verdict table: ${t.rows.length} row(s), ${seen.size} rule id(s), every verdict valid`);
-  if (blockers.length) fail(`completion blocked: required row(s) FAIL: ${blockers.join('; ')}`);
+  if (blockers.length) fail(`completion blocked by required verdict(s): ${blockers.join('; ')}`);
   if (unverified.length) {
     if (contract.scope === 'design-only') warn(`design-only: required row(s) UNVERIFIED (report the UI as unverified): ${unverified.join('; ')}`);
     else fail(`completion blocked: required row(s) UNVERIFIED: ${unverified.join('; ')}`);
   }
-  if (!blockers.length && !unverified.length) pass('no required row is FAIL or UNVERIFIED');
+  if (pendingImplementationReview.size) info(`client review pending implementation at S6: ${[...pendingImplementationReview].join(', ')}`);
+  else if (!blockers.length && !unverified.length) pass('no blocking verdict at S5');
 }
 
 // ---------- S6 ----------
 function s6() {
   if (!needContract('after captures')) return;
+  if (pendingImplementationReview.size) fail(`update 04-verdicts.md with post-change evidence for: ${[...pendingImplementationReview].join(', ')}`);
   if (contract.scope === 'design-only') { na('after captures: scope design-only (nothing implemented)'); return; }
+  for (const [id, { verdict, proof }] of afterProofs) {
+    if (verdict !== 'PASS' || !proofExists(W('05-after'), work, proof)) fail(`${id}: S6 needs PASS and implementation evidence under 05-after/`);
+  }
   const bdir = W('01-before'), adir = W('05-after');
   if (contract.existing === 'no') {
     let ok = 0;
@@ -799,6 +878,12 @@ function s7() {
   if (md === null) { fail('06-report.md missing'); return; }
   const embeds = [...md.matchAll(/!\[[^\]]*\]\(\s*<?([^)\s>]+)>?[^)]*\)/g)].map((m) => m[1]).concat([...md.matchAll(/<img[^>]+src\s*=\s*["']([^"']+)["']/gi)].map((m) => m[1]));
   const names = new Set(); let ok = true;
+  const reportLinks = new Set([...md.matchAll(/(?<!!)\[[^\]]*\]\(<?(?:\.\/)?([^\s)>#]+)(?:#[^)>]*)?>?\)/g)].map(m => m[1]));
+  const traceFiles = ['00-contract.md', '04-verdicts.md'];
+  if (contract.scope !== 'small-fix') traceFiles.push('03-alts/boards/board.md');
+  for (const file of traceFiles) {
+    if (!reportLinks.has(file)) { fail(`06-report.md: link to ${file} so rule decisions can be traced`); ok = false; }
+  }
   for (const e of embeds) {
     const dec = decodeURIComponent(e);
     if (!/^https?:/i.test(dec) && !isFile(path.resolve(work, dec))) { fail(`06-report.md: embedded image "${e}" not found`); ok = false; }

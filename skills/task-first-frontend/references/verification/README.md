@@ -8,7 +8,7 @@
 | --- | --- | --- |
 | S1 계약의 "상태" 절 | [references/state-design.md](references/state-design.md) (시나리오를 고를 때 [state-design-cases.md](references/state-design-cases.md)) | 상태별 설명·다음 행동·요청 표 |
 | S5 판정 (항상) | [SKILL.source.md](SKILL.source.md) | 판정 4종(PASS/FAIL/UNVERIFIED/N/A), 증거 규칙, 기본 폭 1440×900·390×844 |
-| S5, 코드 리뷰가 필요할 때 | [references/client-runtime-review.md](references/client-runtime-review.md) | `UI-01`~`UI-08`을 `04-verdicts.md`의 rule_id로 쓴다 |
+| S5, 계약에서 코드 리뷰를 적용한 경우 | [references/client-runtime-review.md](references/client-runtime-review.md) | 읽기 기록과 UI-01~UI-08의 행이 필수다. 기존 코드 조사는 S5에서 판정하고, 동작 변경은 S5에서 기대값을 정한 뒤 S6에서 구현 후 근거로 판정한다. |
 | S5, 이어지거나 중단·재시도되는 흐름 | [references/behavior-flow-tests.md](references/behavior-flow-tests.md) | 시나리오와 탐지력 확인 |
 | S5, 상태 전이 중 유지 | [references/transition-stability.md](references/transition-stability.md), 방법은 [transition-stability-tests.md](references/transition-stability-tests.md) | 배치·선택·입력·포커스·스크롤·글자 |
 | S5, 화면 사용성 | [references/usability-review.md](references/usability-review.md) (사람 시험이 필요할 때만 [usability-user-testing.md](references/usability-user-testing.md)) | 네 가지 질문, 발견 형식 |
@@ -18,5 +18,6 @@
 
 ## 이 스킬과의 관계
 
+- 적용한 가드레일의 S5 판정 행에서 이 묶음의 방법 문서를 선택한다. 게이트는 선택한 문서의 읽기 기록을 요구한다. `runtime`으로 분류한 항목은 S6에서 확인하며, 설계만 맡긴 작업에는 남은 검증 시나리오를 전달한다.
 - 판정 4종과 "증거는 마지막 수정 뒤의 것만"이라는 규칙은 `04-verdicts.md`에 그대로 적용한다. 게이트는 판정 값과 N/A 이유, PASS 증거 파일의 존재를 검사하고, 내용의 정확성은 검사하지 않는다.
 - 패키지의 안전 경계(외부 영향 조작 금지, 민감정보 가리기)는 이 스킬의 모든 단계에 적용한다.
